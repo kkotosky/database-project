@@ -37,13 +37,10 @@ var makeTextBoxRow = function(str, yes) {
   rows : [{game_rep},{game_rep}];
 }
 */
-
+//name,release,publisher,developer,rating,id
 var exampleGameRows = {
-  rows: [
-  {name:"Legend Of Zelda",release:"1998", publisher:"nintendo",
-    developer:"nintendo", rating:"10", id:"4"},
-  {name:"Dark Souls",release:"2011", publisher:"From Software",
-    developer:"From Software", rating:"11", id:"1"}
+  rows: [["Legend Of Zelda","1998","nintendo","nintendo","10","4"],
+  ["Dark Souls","2011","From Software","From Software","11","1"]
   ]
 };
 
@@ -56,19 +53,18 @@ var makeGameRow = function(row) {
       "<td>"+ row['developer'] +"</td>" +
       "<td>"+ row['rating'] +"</td></tr>");
 };
-
+//char_id, game_id
 var exampleCtgRows = {
-  rows: [{char_id:"2", game_id:"1"}, {char_id : "1", game_id:"2"}]
+  rows: [["2", "1"], ["1", "2"]]
 };
 
 var makeCtgRow = function(row) {
     return $("<tr><td>"+ row['char_id'] +"</td>" +
       "<td>"+ row['game_id'] +"</td></tr>");
 };
+//char_id, name, alias, description, gender, first_game
 var exampleCharRows = { 
-  rows:
-  [{char_id:"1",name:"Zelda", alias:"Sheik",
-    description:"Princess", gender:"Female", first_game:"Legend of Zelda"}]
+  rows:[["1","Zelda","Sheik","Princess","Female", "Legend of Zelda"]]
 };
 var makeCharRow = function(row) {
     return $("<tr><td>"+ row['char_id'] +"</td>" +
@@ -78,12 +74,10 @@ var makeCharRow = function(row) {
       "<td>"+ row['description'] +"</td>" +
       "<td>"+ row['first_game'] +"</td></tr>");
 };
+//console_id, name, abbreviation,description,num_sold,owner_company,release_date
 var exampleConsoleRow = {
-  rows: [
-  {console_id:"1", name:"Nintendo 64", abbreviation:"N64", description:"blah",
-  num_sold:"1,000,000", owner_company:"Nintendo", release_date:"1996"}
-  ]
-}
+  rows: [["1","Nintendo 64", "N64", "blah","1,000,000", "Nintendo","1996"]]
+};
 var makeConsoleRow = function(row) {
     return $("<tr><td>"+ row['console_id'] +"</td>" +
       "<td>"+ row['name'] +"</td>" +
@@ -93,10 +87,10 @@ var makeConsoleRow = function(row) {
       "<td>"+ row['owner_company'] +"</td>"+
       "<td>"+ row['release_date'] +"</td></tr>");
 };
-var exampleCompanyRow = [
-  {company_id:"1", name:"Nintendo", date_founded:"1990", address:"11 arch street",
-    website:"www.nintendo.com", phone:"555-555-5555"}
-]
+//company_id, name, date_founded, address, website, phone
+var exampleCompanyRow = {
+  rows:[["1", "Nintendo", "1990", "11 arch street","www.nintendo.com","555-555-5555"]]
+};
 var makeCompanyRow = function(row) {
     return $("<tr><td>"+ row['company_id'] +"</td>" +
       "<td>"+ row['name'] +"</td>" +
@@ -105,10 +99,10 @@ var makeCompanyRow = function(row) {
       "<td>"+ row['website'] +"</td>" +
       "<td>"+ row['phone'] +"</td></tr>");
 };
-
-var exampleGTConRow = [
-  {console_id:"1", game_id:"1"}
-]
+//console_id, game_id
+var exampleGTConRow = {
+  rows:[["1", "1"]]
+};
 
 var makeGTConRow = function(row) {
     return $("<tr><td>"+ row['console_id'] +"</td>" +
@@ -196,17 +190,20 @@ var submitSelectRequest = function(){
   $.each(inputs, function(k, v){
     var input = $(v)[0];
     values.push([input.attributes[0].nodeValue, input.value]);
+    input.value = '';
   });
-  tableDib.find('#begin_message').hide();
+  $('#begin_message').hide();
+  $('#result_message').show();
   tableDib.find('#update_insert').hide();
-  $.ajax({
+  submitDiv.hide();
+  /*$.ajax({
     type:'GET',
     url:'/select/'+requestTable,
     data: values,
     dataType:'json'
   }).done(function(resp){
     console.log(resp);
-  });
+  });*/
 }
 
 submitButton.click(function(){
