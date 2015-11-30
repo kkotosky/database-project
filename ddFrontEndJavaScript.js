@@ -13,7 +13,7 @@ var submitButton = $('#submit_div button');
 var updateSubmit = $('#update_submit');
 var requestOperation;
 var requestTable;
-
+var tableDib;
 
 var hideDivs = function(){
 	ctgTable.hide();
@@ -27,7 +27,7 @@ var hideDivs = function(){
 
 var makeTextBoxRow = function(str, yes) {
   if (yes) {
-    return "<input type="text" value='"+str+"''>"+ str + " </input>";
+    return "<input type='text' value='"+str+"''>"+ str + " </input>";
   } else {
     return str;
   }
@@ -107,7 +107,7 @@ var makeCompanyRow = function(row) {
 };
 
 var exampleGTConRow = [
-  {console_id:"1", game_id:"1"};
+  {console_id:"1", game_id:"1"}
 ]
 
 var makeGTConRow = function(row) {
@@ -168,24 +168,46 @@ operationRadios.change(function(evt){
 tableRadios.change(function(evt){
 	hideDivs();
 	var val = evt.currentTarget.value;
-	var requestTable = val;
+	requestTable = val;
 	if(val === 'ctg') {
-		ctgTable.show();
+		tableDib = ctgTable;
 	} else if(val === 'game') {
-		gameTable.show();
+		tableDib = gameTable;
 	} else if(val === 'character') {
-		charTable.show();
+		tableDib = charTable;
 	} else if(val === 'consoles') {
-		consoleTable.show();
+		tableDib = consoleTable;
 	} else if(val === 'gtcon') {
-		gtconTable.show();
+		tableDib = gtconTable;
 	} else if(val === 'company') {
-		companyTable.show();
+		tableDib = companyTable;
 	} else {
 		console.log ("error");
 	}
+  tableDib.show();
+  tableDib.find("#update_insert").show();
+  $('#begin_message').show();
 	submitDiv.show();
 });
+
+var submitSelectRequest = function(){
+  var inputs = tableDib.find('#update_insert').find('input');
+  var values = [];
+  $.each(inputs, function(k, v){
+    var input = $(v)[0];
+    values.push([input.attributes[0].nodeValue, input.value]);
+  });
+  tableDib.find('#begin_message').hide();
+  tableDib.find('#update_insert').hide();
+  $.ajax({
+    type:'GET',
+    url:'/select/'+requestTable,
+    data: values,
+    dataType:'json'
+  }).done(function(resp){
+    console.log(resp);
+  });
+}
 
 submitButton.click(function(){
 	if (requestOperation === 'select') {
