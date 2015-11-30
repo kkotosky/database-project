@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+ <body>
+	<div id="operation_selector">
+		<input type="radio" name="select_op" value="select"> Select </input>
+		<input type="radio" name="select_op" value="insert"> Insert </input>
+		<input type="radio" name="select_op" value="update"> Update </input>
+		<input type="radio" name="select_op" value="delete"> Delete </input>
+	</div>
+
+	<div id="table_selector" hidden>
+		<input type="radio" name="select_table" value="ctg"> Character to Game </input>
+		<input type="radio" name="select_table" value="game"> Games </input>
+		<input type="radio" name="select_table" value="character"> Characters </input>
+		<input type="radio" name="select_table" value="consoles"> Console </input>
+		<input type="radio" name="select_table" value="gtcon"> Game to Console </input>
+		<input type="radio" name="select_table" value="company"> Company </input>
+	</div>
+	<div id="request_update">
+    <label>Please enter the ID of the table you want to update and hit submit</label> 
+    <input  id="update_id" type="text"><input>
+    <button id="update_submit"> Submit Request </button>
+	</div>
+	<div id="ctg_table" hidden>
+		<table>
+			<tr>
+				<td>Character Id</td>
+				<td>Game Id</td>
+			</tr>
+			<tr id="update_insert" hidden>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+			</tr>
+		</table>
+	</div>
+	<div id="game_table" hidden>
+		<table>
+			<tr>
+				<td>Game ID</td>
+				<td>Name</td>
+				<td>Release Date</td>
+				<td>Publisher</td>
+				<td>Developer</td>
+				<td>Rating</td>
+			</tr>
+			<tr id="update_insert" hidden>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="char_table" hidden>
+		<table>
+			<tr>
+				<td>Character ID</td>
+				<td>Name</td>
+				<td>Alias</td>
+				<td>Gender</td>
+				<td>Description</td>
+				<td>First Game</td>
+			</tr>
+			<tr id="update_insert" hidden>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+			</tr>
+		</table>
+	</div>
+
+	<div id="console_table" hidden>
+		<table>
+			<tr>
+				<td>Console ID</td>
+				<td>Name</td>
+				<td>Abbreviation</td>
+				<td>Description</td>
+				<td>Number Sold</td>
+				<td>Owner Company</td>
+				<td>Release Date</td>
+			</tr>
+			<tr id="update_insert" hidden>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+			</tr>
+		</table>
+	</div>
+	<div id="company_table" hidden>
+		<table>
+			<tr>
+				<td>Company ID</td>
+				<td>Name</td>
+				<td>Date Founded</td>
+				<td>Address</td>
+				<td>Website</td>
+				<td>Phone</td>
+			</tr>
+			<tr id="update_insert" hidden>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+			</tr>
+		</table>
+	</div>
+	<div id="gtcon_table" hidden>
+		<table>
+			<tr>
+				<td>Console Id</td>
+				<td>Game Id</td>
+			</tr>
+			<tr id="update_insert" hidden>
+				<td><input type="text"></input></td>
+				<td><input type="text"></input></td>
+			</tr>
+		</table>
+	</div>
+	<div id="submit_div">
+		<button id="submit_request"> Submit Request </button>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  	<script src="ddFrontEndJavaScript.js"></script>
+ </body>
+ </html>
