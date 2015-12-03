@@ -1,5 +1,5 @@
-#!flask/bin/python
-from flask import Flask
+#!../flask/bin/python
+from flask import Flask, render_template
 import MySQLdb
 import json
 
@@ -12,18 +12,22 @@ db = MySQLdb.connect(host="localhost",
                      db=dbname)
 
 @app.route('/')
-def index():
-    return "Hello, World!"
+def homepage():
+    return render_template('ddFrontEnd.html')
 
 
 @app.route('/select/<table>', methods=['GET'])
 def select_entry(table):
-    query = "select * from " + dbname + "." +  table
+    query = "SELECT * FROM {table_name}".format(
+        table_name=table
+    )
+
+    print query
+
     cursor = db.cursor()
     cursor.execute(query)
 
     return assemble_json(cursor)
-
 
 @app.route('/update/<table>/<entryid>', methods=['POST'])
 def update_entry(table):
@@ -31,7 +35,18 @@ def update_entry(table):
 
 @app.route('/insert/<table>', methods=['POST'])
 def insert_entry(table):
-    print "Hello insert"
+    query = "INSERT INTO {table_name} ({column_values}) VALUES ({row_values})".format(
+        table_name=table,
+        column_values="",
+        row_values="",
+    )
+
+    print query
+
+    cursour = db.cursor()
+    cursor.execut(query)
+
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 @app.route('/delete/<table>/<entryid>', methods=['POST'])
 def delete_entry(table, entryid):
@@ -42,7 +57,6 @@ def delete_entry(table, entryid):
     db.commit()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
-
 
 @app.route('/viewall/<table>', methods=['GET'])
 def viewall(table):
