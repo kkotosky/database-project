@@ -4,6 +4,12 @@
 <head>
 </head>
  <body>
+ 	<div id="success_message" hidden>
+ 		Operation was successfull
+ 	</div>
+ 	<div id="fail_message" hidden>
+ 		Operation Failed
+ 	</div>
 	<div id="operation_selector">
 		<div> Which operation would you like to perform?</div>
 		<input type="radio" name="select_op" value="select"> Select </input>
@@ -25,11 +31,11 @@
 	<br>
 	<br>
 	<br>
-	<!--<div id="request_update">
-    <label>Please enter the ID of the table you want to update and hit submit</label> 
-    <input  id="update_id" type="text"><input>
-    <button id="update_submit"> Submit Request </button>
-	</div>-->
+	<div id="request_update" hidden>
+    	<label>Please enter the ID of the table you want to update and hit submit</label> <br>
+    	<input  id="update_delete_id" type="text"></input>
+    	<button id="get_single_data"> Get data to change </button>
+	</div>	
 	<div id="begin_message" hidden>
 		Please enter any data you would like to query on.
 		Each column will be AND'd together and will check only for equality
@@ -41,7 +47,7 @@
 				<td>Game Id</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input col="char_id" type="text"></input></td>
+				<td><input col="character_id" type="text"></input></td>
 				<td><input col="game_id" type="text"></input></td>
 			</tr>
 		</table>
@@ -78,7 +84,7 @@
 				<td>First Game</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input disabled col="char_id" type="text"></input></td>
+				<td><input disabled col="character_id" type="text"></input></td>
 				<td><input col="name" type="text"></input></td>
 				<td><input col="alias" type="text"></input></td>
 				<td><input col="gender" type="text"></input></td>
@@ -104,7 +110,7 @@
 				<td><input col="name" type="text"></input></td>
 				<td><input col="abbreviation" type="text"></input></td>
 				<td><input col="descrption" type="text"></input></td>
-				<td><input col="num_sold" type="text"></input></td>
+				<td><input col="number_sold" type="text"></input></td>
 				<td><input col="owner_company" type="text"></input></td>
 				<td><input col="release_date" type="text"></input></td>
 			</tr>
@@ -145,7 +151,10 @@
 	<div id="submit_div">
 		<button id="submit_request"> Submit Request </button>
 	</div>
+	<div id="submit_new">
+		<button id="submit_new"> Submit New </button>
+	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  	<script src="js/ddFrontEndJavaScript.js"></script>
+  	<script src="../js/ddFrontEndJavaScript.js"></script>
  </body>
  </html>
