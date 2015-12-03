@@ -1,5 +1,5 @@
 #!../flask/bin/python
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 import MySQLdb
 import json
 
@@ -15,12 +15,19 @@ db = MySQLdb.connect(host="localhost",
 def homepage():
     return render_template('ddFrontEnd.html')
 
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('js', path)
+
 
 @app.route('/select/<table>', methods=['GET'])
 def select_entry(table):
     query = "SELECT * FROM {table_name}".format(
         table_name=table
     )
+
+    content = request.json
+    print content
 
     print query
 
