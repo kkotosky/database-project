@@ -20,25 +20,53 @@
 
 	<div id="table_selector" hidden>
 		<div> Select which table you would like to operate on </div>
-		<input type="radio" name="select_table" value="ctg"> Character to Game </input>
 		<input type="radio" name="select_table" value="game"> Games </input>
 		<input type="radio" name="select_table" value="character"> Characters </input>
 		<input type="radio" name="select_table" value="consoles"> Console </input>
-		<input type="radio" name="select_table" value="gtcon"> Game to Console </input>
 		<input type="radio" name="select_table" value="company"> Company </input>
+		<br>
+		<input type="radio" class="delete update insert" name="select_table" value="games_consoles"> Game's Console </input>
+		<input type="radio" class="delete update insert" name="select_table" value="console_games"> Console Games </input>
+		<input type="radio" class="delete update insert" name="select_table" value="char_games"> Character's Games</input>
+		<input type="radio" class="delete update insert" name="select_table" value="games_characters"> Games' Characters </input>
+		<br>
+		<input type="radio" class="select update" name="select_table" value="ctg"> Character and Game </input>
+		<input type="radio" class="select update" name="select_table" value="gtcon"> Game and Console </input>
 	</div>
 	<br>
 	<br>
 	<br>
 	<br>
+	<div id="final_update_message" hidden>
+		Press Submit to Update Your Changes
+	</div>
+	<div id="final_delete_message" hidden>
+		Are you sure you want to delete this item?
+	</div>
 	<div id="request_update" hidden>
-    	<label>Please enter the ID of the table you want to update and hit submit</label> <br>
+    	<label>Please enter the name of what you want to change and hit submit</label> <br>
     	<input  id="update_delete_id" type="text"></input>
     	<button id="get_single_data"> Get data to change </button>
 	</div>	
 	<div id="begin_message" hidden>
 		Please enter any data you would like to query on.
 		Each column will be AND'd together and will check only for equality
+	</div>
+	<div id="provide_name" hidden>
+		<div id="messages">
+			<div id="games_message" hidden>
+				Please enter the name of the Game you want to address
+			</div>
+			<div id="console_message" hidden>
+				Please enter the name of the Console you want to address
+			</div>
+			<div id="character_message" hidden>
+				Please enter the name of the Character you want to address
+			</div>
+		</div>
+		<div id ="update_insert">
+			<input id="connector_name" type="text"></input>
+		</div>
 	</div>
 	<div id="ctg_table" hidden>
 		<table>
@@ -65,7 +93,7 @@
 			<tr id="update_insert" hidden>
 				<td><input disabled col="game_id" type="text"></input></td>
 				<td><input col="name" type="text"></input></td>
-				<td><input col="release_date" type="text"></input></td>
+				<td><input col="release_date" placeholder="MM-DD-YYYY" type="text"></input></td>
 				<td><input col="publisher" type="text"></input></td>
 				<td><input col="developer" type="text"></input></td>
 				<td><input col="rating" type="text"></input></td>
@@ -112,7 +140,7 @@
 				<td><input col="descrption" type="text"></input></td>
 				<td><input col="number_sold" type="text"></input></td>
 				<td><input col="owner_company" type="text"></input></td>
-				<td><input col="release_date" type="text"></input></td>
+				<td><input col="release_date" placeholder="MM-DD-YYYY" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
@@ -148,11 +176,11 @@
 			</tr>
 		</table>
 	</div>
-	<div id="submit_div">
+	<div id="submit_div" hidden>
 		<button id="submit_request"> Submit Request </button>
 	</div>
 	<div id="submit_new">
-		<button id="submit_new"> Submit New </button>
+		<button id="submit_new"> Reset Query </button>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   	<script src="../js/ddFrontEndJavaScript.js"></script>

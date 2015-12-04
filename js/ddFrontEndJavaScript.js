@@ -19,6 +19,7 @@ var requestTable;
 var tableDib;
 var textInputs = $('input[type="text"]');
 var updateDeleteRequest = $('#get_single_data');
+var connectorDiv = $('#provide_name');
 var exampleGameRows = {
   rows: [
   {name:"Legend Of Zelda",release_date:"1998", publisher:"nintendo",
@@ -41,13 +42,13 @@ var exampleConsoleRow = {
   number_sold:"1,000,000", owner_company:"Nintendo", release_date:"1996"}
   ]
 };
-var exampleCompanyRow = [
+var exampleCompanyRow = {rows:[
   {company_id:"1", name:"Nintendo", date_founded:"1990", address:"11 arch street",
     website:"www.nintendo.com", phone:"555-555-5555"}
-];
-var exampleGTConRow = [
+]};
+var exampleGTConRow = {rows:[
   {console_id:"1", game_id:"1"}
-];
+]};
 
 var hideDivs = function(){
 	ctgTable.hide();
@@ -57,6 +58,25 @@ var hideDivs = function(){
 	companyTable.hide();
 	gtconTable.hide();
 	submitDiv.hide();
+  connectorDiv.hide();
+  tableSelectorDiv.hide();
+  $('#final_update_message').hide();
+  $('#request_update').hide();
+};
+var getTableId = function(){
+  if(requestTable === 'ctg') {
+    return "ctg_id";
+  } else if(requestTable === 'game') {
+    return "game_id";
+  } else if(requestTable === 'character') {
+    return "character_id";
+  } else if(requestTable === 'consoles') {
+   return "console_id";
+  } else if(requestTable === 'gtcon') {
+   return "gtcon_id"; 
+  } else if(requestTable === 'company') {
+   return "company_id";
+  }
 };
 var makeTextBoxRow = function(str, editable) {
   if (editable) {
@@ -116,28 +136,69 @@ var fillCtGTable = function(data, editable){
     gtconTable.find("table").append(makeGTConRow(rep, editable));
   });
 };
-var fillCharTable = function(data, yes) {
+var fillCharTable = function(data, editable) {
   $.each(data, function(k,rep) {
     charTable.find("table").append(makeCharRow(rep, editable));
   });
 };
-var fillConsoleTable = function(data, yes) {
+var fillConsoleTable = function(data, editable) {
   $.each(data, function(k,rep) {
     consoleTable.find("table").append(makeConsoleRow(rep, editable));
   });
 };
-var fillCompanyTable = function(data, yes) {
+var fillCompanyTable = function(data, editable) {
   $.each(data, function(k,rep) {
     companyTable.find("table").append(makeCompanyRow(rep, editable));
   });
 };
-var fillGtConTable = function(data, yes) {
+var fillGtConTable = function(data, editable) {
   $.each(data, function(k,rep) {
     gtconTable.find("table").append(makeGTConRow(rep, editable));
   });
 };
+var delegateFillTable = function(data, editable){
+  var val = requestTable;
+  if(val === 'ctg') {
+    fillCtGTable(data, editable); 
+  } else if(val === 'game' || val === 'console_games' || val === 'char_games') {
+    fillGameTable(data, editable);
+  } else if(val === 'character' || val === 'games_characters') {
+    fillCharTable(data, editable);
+  } else if(val === 'consoles' || val === 'games_consoles') {
+    fillConsoleTable(data, editable);
+  } else if(val === 'gtcon') {
+    fillGtConTable(data, editable);
+  } else if(val === 'company') {
+    fillCompanyTable(data, editable)
+  }
+}
+var delegateFillInputTable = function(data, editable){
+  var inputsToFill = tableDib.find('input[type="text"]');
+  var count = 0
+  var newDataFormat = [];
+  $.each(data, function(k,v){
+    newDataFormat.push(v);
+  });
+  $.each(inputsToFill, function(k,v){
+    $(v).val(newDataFormat[count]);
+    count++;
+  });
+};
+var disabledTableRadios = function(classname){
+  var radios = tableSelectorDiv.find(classname);
+  $.each(radios, function(k,v){
+    $(v).prop('disabled',true)
+  });
+};
+var enableTableRadios = function(){
+  var radios = tableSelectorDiv.find("input[type='radio']:disabled");
+  $.each(radios, function(k,v){
+    $(v).prop('disabled',false)
+  });
+};
 operationRadios.change(function(evt){
 	hideDivs();
+  enableTableRadios();
   var activeTable = tableSelectorDiv.find('.active');
   activeTable.removeClass('.active');
   activeTable.prop('checked',false);
@@ -146,17 +207,22 @@ operationRadios.change(function(evt){
 	requestOperation = val;
 	if(val === 'select') {
 		tableSelectorDiv.show();
+    disabledTableRadios('.select');
 	} else if(val === 'insert') {
 		tableSelectorDiv.show();
+    disabledTableRadios('.insert');
 	} else if(val === 'update') {
 		tableSelectorDiv.show();
+    disabledTableRadios('.update');
 	} else {
 		tableSelectorDiv.show();
+    disabledTableRadios('.delete');
 	}
   $('#begin_message').hide();
 });
 tableRadios.change(function(evt){
 	hideDivs();
+  tableSelectorDiv.show();
 	var val = evt.currentTarget.value;
   $(evt.currentTarget).addClass('active');
 	requestTable = val;
@@ -173,18 +239,24 @@ tableRadios.change(function(evt){
 	} else if(val === 'company') {
 		tableDib = companyTable;
 	} else {
-		console.log ("error");
+		tableDib = connectorDiv;
+    if(val === 'games_consoles' || val === 'games_characters'){
+      $('#games_message').show();
+    } else if (val === 'console_games') {
+      $('#console_message').show();
+    } else {
+      $('#character_message').show();
+    }
 	}
-  if(requestOperation == 'select' || requestOperation == 'insert'){
+  if (requestOperation == 'select' || requestOperation == 'insert'){
     tableDib.show();
     tableDib.find("#update_insert").show();
-    $('#begin_message').show();
     submitDiv.show();
 	} else {
     requestSample.show();
   }
 });
-var submitSelectRequest = function(){
+var submitSelectUsual = function(){
   var inputs = tableDib.find('#update_insert').find('input');
   var values = [];
   $.each(inputs, function(k, v){
@@ -193,15 +265,22 @@ var submitSelectRequest = function(){
   });
   tableDib.find('#begin_message').hide();
   tableDib.find('#update_insert').hide();
-  /*$.ajax({
-    type:'GET',
-    url:'/select/'+requestTable,
-    data: {values: values},
-    dataType:'json'
-  }).done(function(resp){*/
-  fillGameTable(exampleGameRows.rows, false);
-  submitDiv.hide();
-  //});
+  //MAKE AJAX REQUEST TO /select/requestTable using
+  // {values: values}
+  delegateFillTable(exampleGameRows.rows, false);
+}
+var submitSelectConnections = function(){
+  var connectorName = $('#connector_name').val();
+  //MAKE AJAX REQUEST HERE TO /select/connections/table
+  //using {values:{name: connectorName}}
+};
+var submitSelectRequest = function(){
+  if (requestTable === 'games_characters' || requestTable === 'char_games' 
+    || requestTable === 'console_games' || requestTable ==='games_consoles' ) {
+    submitSelectConnections();
+  } else {
+    submitSelectUsual();
+  }
 };
 var submitInsertRequest = function(){
   var inputs = tableDib.find('#update_insert').find('input');
@@ -210,6 +289,24 @@ var submitInsertRequest = function(){
     var input = $(v)[0];
     values.push([input.attributes[0].nodeValue, input.value]);
   });
+  if (requestTable === 'gtcon' || requestTable === 'ctg') {
+    submitRequestConnection(values);
+  } else {
+    submitInsertUsual();
+  }
+};
+var submitRequestConnection= function(values){
+  if (requestTable === 'gtcon') {
+    //MAKE AJAX CALL TO /insert/connect/gtcon 
+    // {console_name: values[0][1], game_name : values[1][1]}
+    //will handle manipulating data on puthon side endpoint
+  } else {
+    //MAKE AJAX CALL TO /insert/connect/ctg 
+    // {character_name: values[0][1], game_name : values[1][1]}
+    //will handle manipulating data on python side endpoint
+  }
+}
+var submitInsertUsual = function(values){
   tableDib.find('#begin_message').hide();
   tableDib.find('#update_insert').hide();
   /*$.ajax({
@@ -220,38 +317,64 @@ var submitInsertRequest = function(){
   }).done(function(resp){*/
     submitDiv.hide();
   //});
+}
+var submitGetUpdateRequest = function(){
+  var name = $('#update_delete_id').val();
+  values = [["name",name]];
+  //make SELECT AJAX REQUEST TO /select/requestTable using values
+  //GET RESPONSE OF ROW
+  delegateFillInputTable(exampleCompanyRow.rows[0]);
+  requestSample.hide();
+  tableDib.show();
+  tableDib.find('#update_insert').show();
+  $('#update_delete_id').val('');
+  $('#final_update_message').show();
+  submitDiv.show();
 };
-
-
-var submitUpdateRequest = function(){
-  
+var submitFinalUpdateRequest = function(){
+  var inputs = tableDib.find('#update_insert').find('input');
+  var values = [];
+  $.each(inputs, function(k, v){
+    var input = $(v)[0];
+    values.push([input.attributes[0].nodeValue, input.value]);
+  });
+  var id = values[0][1];
+  values = values.splice(1);
+  //SUBMIT AJAX REUQEST TO /update/requestTable/id
 };
-var getTableId = function(){
-  if(requestTable === 'ctg') {
-    return "ctg_id";
-  } else if(requestTable === 'game') {
-    return "game_id";
-  } else if(requestTable === 'character') {
-    return "character_id";
-  } else if(requestTable === 'consoles') {
-   return "console_id";
-  } else if(requestTable === 'gtcon') {
-   return "gtcon_id"; 
-  } else if(requestTable === 'company') {
-   return "company_id";
+var deleteId = -1;
+var sunmitGetDeleteRequest = function(){
+  deleteId = -1;
+  var name = $('#update_delete_id').val();
+  values = [["name",name]];
+  //make SELECT AJAX REQUEST TO /select/requestTable using values
+  //GET RESPONSE OF ROW
+  delegateFillTable(exampleCompanyRow.rows);
+  requestSample.hide();
+  tableDib.show();
+  $('#update_delete_id').val('');
+  $('#final_delete_message').show();
+  submitDiv.show();
+};
+var submitFinalDeleteRequest = function(){
+  if (deleteId) {
+    if (requestTable === 'games'){
+      //make AJAX REQUEST to /bulk-delete/gtcon/ with {values:{"game_id":deleteId}}
+      //make AJAX REQUEST to /bulk-delete/ctg with {values:{"game_id":deleteId}}
+    } else if (requestTable === 'character') {
+      //make AJAX REQUEST to /bulk-delete/ctg with {values:{"character_id":deleteId}}
+    } else if (requestTable === 'consoles') {
+      //make AJAX REQUEST to /bulk-delete/gtcon with {values:{"console":deleteId}}
+    }
+    //MAKE AJAX REQUEST TO /delete/requestTable/id
   }
 };
-updateDeleteRequest.click(function(){
-  var values = [[getTableId(), $('#update_delete_id').value]];
-  /*$.ajax({
-    type:'GET',
-    url:'/select/'+requestTable,
-    data: {values: values},
-    dataType:'json'
-  }).done(function(resp){*/
-  fillGameTable(.rows, true);
-  submitDiv.hide();
-  //});
+$('#get_single_data').click(function(){
+  if (requestOperation === 'update'){
+    submitGetUpdateRequest();
+  } else {
+    sunmitGetDeleteRequest();
+  }
 });
 submitButton.click(function(){
 	if (requestOperation === 'select') {
@@ -259,9 +382,9 @@ submitButton.click(function(){
 	} else if (requestOperation === 'insert') {
     submitInsertRequest();
 	} else if (requestOperation === 'update') {
-		submitUpdateRequest();
+		submitFinalUpdateRequest();
 	} else if (requestOperation === 'delete') {
-		submitDeleteRequest();
+		submitFinalDeleteRequest();
 	}
 });
 var clearTables = function(){
@@ -276,11 +399,6 @@ var clearInputs = function(){
 
   });
 };
-updateSubmit.click(function(){
-  var id = $('update_id').text();
-  //form request for that id
-});
-
 resetButton.click(function(){
   var activeOp = operationDiv.find('.active');
   var activeTable = tableSelectorDiv.find('.active');
