@@ -1,6 +1,7 @@
 #!../flask/bin/python
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request,jsonify
 import MySQLdb
+import ast
 import json
 
 app = Flask(__name__)
@@ -22,14 +23,30 @@ def send_js(path):
 
 @app.route('/select/<table>', methods=['GET'])
 def select_entry(table):
-    query = "SELECT * FROM {table_name}".format(
-        table_name=table
+    # retrieve array and translate it into python array
+    data = ast.literal_eval(request.args.get("values"))
+
+    # filter out any values that are empty
+    data = [a for a in data if '' not in a]
+    
+    filter_string=""
+    for x in range(0, len(data)):
+        if x==0:
+            filter_string="WHERE {column}='{value}'".format(
+                column=data[0][0],
+                value=data[0][1]
+            )
+        else:
+            filter_string+=" AND {column}='{value}'".format(
+                column=data[x][0],
+                value=data[x][1]
+            )
+
+    query = "SELECT * FROM {table_name} {filter_string}".format(
+        table_name=table,
+        filter_string=filter_string
     )
-
-    content = request.json
-    print content
-
-    print query
+    print "Query: " + query
 
     cursor = db.cursor()
     cursor.execute(query)

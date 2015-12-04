@@ -265,8 +265,16 @@ var submitSelectUsual = function(){
   });
   tableDib.find('#begin_message').hide();
   tableDib.find('#update_insert').hide();
-  //MAKE AJAX REQUEST TO /select/requestTable using
-  // {values: values}
+  console.log(values)
+  $.ajax({
+    type:'GET',
+    url:'/select/'+requestTable,
+    data: {values: JSON.stringify(values)},
+    dataType:'json',
+    contentType: "application/json; charset=utf-8",
+  }).done(function(resp){
+    console.log(resp);
+  });
   delegateFillTable(exampleGameRows.rows, false);
 }
 var submitSelectConnections = function(){
