@@ -51,13 +51,13 @@ var exampleGTConRow = {rows:[
 ]};
 
 var hideDivs = function(){
-	ctgTable.hide();
-	gameTable.hide();
-	charTable.hide();
-	consoleTable.hide();
-	companyTable.hide();
-	gtconTable.hide();
-	submitDiv.hide();
+  ctgTable.hide();
+  gameTable.hide();
+  charTable.hide();
+  consoleTable.hide();
+  companyTable.hide();
+  gtconTable.hide();
+  submitDiv.hide();
   connectorDiv.hide();
   tableSelectorDiv.hide();
   $('#final_update_message').hide();
@@ -197,49 +197,49 @@ var enableTableRadios = function(){
   });
 };
 operationRadios.change(function(evt){
-	hideDivs();
+  hideDivs();
   enableTableRadios();
   var activeTable = tableSelectorDiv.find('.active');
   activeTable.removeClass('.active');
   activeTable.prop('checked',false);
-	var val = evt.currentTarget.value;
+  var val = evt.currentTarget.value;
   $(evt.currentTarget).addClass('active');
-	requestOperation = val;
-	if(val === 'select') {
-		tableSelectorDiv.show();
+  requestOperation = val;
+  if(val === 'select') {
+    tableSelectorDiv.show();
     disabledTableRadios('.select');
-	} else if(val === 'insert') {
-		tableSelectorDiv.show();
+  } else if(val === 'insert') {
+    tableSelectorDiv.show();
     disabledTableRadios('.insert');
-	} else if(val === 'update') {
-		tableSelectorDiv.show();
+  } else if(val === 'update') {
+    tableSelectorDiv.show();
     disabledTableRadios('.update');
-	} else {
-		tableSelectorDiv.show();
+  } else {
+    tableSelectorDiv.show();
     disabledTableRadios('.delete');
-	}
+  }
   $('#begin_message').hide();
 });
 tableRadios.change(function(evt){
-	hideDivs();
+  hideDivs();
   tableSelectorDiv.show();
-	var val = evt.currentTarget.value;
+  var val = evt.currentTarget.value;
   $(evt.currentTarget).addClass('active');
-	requestTable = val;
-	if(val === 'ctg') {
-		tableDib = ctgTable;
-	} else if(val === 'game') {
-		tableDib = gameTable;
-	} else if(val === 'character') {
-		tableDib = charTable;
-	} else if(val === 'consoles') {
-		tableDib = consoleTable;
-	} else if(val === 'gtcon') {
-		tableDib = gtconTable;
-	} else if(val === 'company') {
-		tableDib = companyTable;
-	} else {
-		tableDib = connectorDiv;
+  requestTable = val;
+  if(val === 'ctg') {
+    tableDib = ctgTable;
+  } else if(val === 'game') {
+    tableDib = gameTable;
+  } else if(val === 'character') {
+    tableDib = charTable;
+  } else if(val === 'consoles') {
+    tableDib = consoleTable;
+  } else if(val === 'gtcon') {
+    tableDib = gtconTable;
+  } else if(val === 'company') {
+    tableDib = companyTable;
+  } else {
+    tableDib = connectorDiv;
     if(val === 'games_consoles' || val === 'games_characters'){
       $('#games_message').show();
     } else if (val === 'console_games') {
@@ -247,12 +247,12 @@ tableRadios.change(function(evt){
     } else {
       $('#character_message').show();
     }
-	}
+  }
   if (requestOperation == 'select' || requestOperation == 'insert'){
     tableDib.show();
     tableDib.find("#update_insert").show();
     submitDiv.show();
-	} else {
+  } else {
     requestSample.show();
   }
 });
@@ -377,15 +377,15 @@ $('#get_single_data').click(function(){
   }
 });
 submitButton.click(function(){
-	if (requestOperation === 'select') {
+  if (requestOperation === 'select') {
     submitSelectRequest();
-	} else if (requestOperation === 'insert') {
+  } else if (requestOperation === 'insert') {
     submitInsertRequest();
-	} else if (requestOperation === 'update') {
-		submitFinalUpdateRequest();
-	} else if (requestOperation === 'delete') {
-		submitFinalDeleteRequest();
-	}
+  } else if (requestOperation === 'update') {
+    submitFinalUpdateRequest();
+  } else if (requestOperation === 'delete') {
+    submitFinalDeleteRequest();
+  }
 });
 var clearTables = function(){
   var filledRows = $('.data_row');
