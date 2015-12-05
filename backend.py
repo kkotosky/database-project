@@ -1,5 +1,5 @@
 #!../flask/bin/python
-from flask import Flask, render_template, send_from_directory, request,jsonify
+from flask import Flask, render_template, send_from_directory, request, jsonify
 import MySQLdb
 import ast
 import json
@@ -57,18 +57,45 @@ def select_entry(table):
 def update_entry(table):
     print "Hello update"
 
+    query = "UPDATE {table_name} SET {new_values} WHERE {id}".format(
+            table_name=table,
+            new_values="",
+            id=table + "_id=" + entryid
+        )
+
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+
 @app.route('/insert/<table>', methods=['POST'])
 def insert_entry(table):
+    data = ast.literal_eval(request.data)
+
+    # filter out any values that are empty
+    data = [a for a in data if '' not in a]
+
+    columns=""
+    values=""
+    for x in range(0, len(data)):
+        if x == 0:
+            columns += data[0][0]
+            values += "'" + data[0][1] + "'"
+        else:
+            columns += ", " + data[x][0]
+            values += ", '" + data[x][1] + "'"
+
+    print columns
+    print values
+
     query = "INSERT INTO {table_name} ({column_values}) VALUES ({row_values})".format(
         table_name=table,
-        column_values="",
-        row_values="",
+        column_values=columns,
+        row_values=values,
     )
 
     print query
 
-    cursour = db.cursor()
-    cursor.execut(query)
+    cursor = db.cursor()
+    cursor.execute(query)
+    db.commit()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 

@@ -300,7 +300,7 @@ var submitInsertRequest = function(){
   if (requestTable === 'gtcon' || requestTable === 'ctg') {
     submitRequestConnection(values);
   } else {
-    submitInsertUsual();
+    submitInsertUsual(values);
   }
 };
 var submitRequestConnection= function(values){
@@ -317,14 +317,16 @@ var submitRequestConnection= function(values){
 var submitInsertUsual = function(values){
   tableDib.find('#begin_message').hide();
   tableDib.find('#update_insert').hide();
-  /*$.ajax({
-    type:'GET',
-    url:'/select/'+requestTable,
-    data: {values: values},
-    dataType:'json'
-  }).done(function(resp){*/
+  $.ajax({
+    type:'POST',
+    url:'/insert/'+requestTable,
+    dataType:'json',
+    contentType: "application/json",
+    data: JSON.stringify(values),
+  }).donechr
+  (function(resp){
     submitDiv.hide();
-  //});
+  });
 }
 var submitGetUpdateRequest = function(){
   var name = $('#update_delete_id').val();
