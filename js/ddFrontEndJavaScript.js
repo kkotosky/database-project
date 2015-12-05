@@ -29,7 +29,8 @@ var exampleGameRows = {
   ]
 };
 var exampleCtgRows = {
-  rows: [{character_id:"2", game_id:"1"}, {character_id : "1", game_id:"2"}]
+  rows: [{character_id:"2", game_id:"1"}, {character_id : "1", game_id:"2"},
+       {character_id:"4", game_id:"3"}, {character_id : "3", game_id:"4"}]
 };
 var exampleCharRows = { 
   rows:
@@ -130,32 +131,79 @@ var fillGameTable = function(data, yes){
   $.each(data, function(k,rep){
     gameTable.find("table").append(makeGameRow(rep), yes);
   });
+  gameTable.show();
 };
 var fillCtGTable = function(data, editable){
   $.each(data, function(k,rep){
     gtconTable.find("table").append(makeGTConRow(rep, editable));
   });
+  ctgTable.show();
 };
 var fillCharTable = function(data, editable) {
   $.each(data, function(k,rep) {
     charTable.find("table").append(makeCharRow(rep, editable));
   });
+  charTable.show();
 };
 var fillConsoleTable = function(data, editable) {
   $.each(data, function(k,rep) {
     consoleTable.find("table").append(makeConsoleRow(rep, editable));
   });
+  consoleTable.show();
 };
 var fillCompanyTable = function(data, editable) {
   $.each(data, function(k,rep) {
     companyTable.find("table").append(makeCompanyRow(rep, editable));
   });
+  companyTable.show();
 };
 var fillGtConTable = function(data, editable) {
   $.each(data, function(k,rep) {
     gtconTable.find("table").append(makeGTConRow(rep, editable));
   });
+  gtconTable.show();
 };
+var getCompanyRowInOrder = function(row){
+  var newDataFormat = [];
+  newDataFormat.push(row['company_id']);
+  newDataFormat.push(row['name']);
+  newDataFormat.push(row['date_founded']);
+  newDataFormat.push(row['address']);
+  newDataFormat.push(row['website']);
+  newDataFormat.push(row['phone']);
+  return newDataFormat;
+};
+var getGameRowInOrder = function(row){
+  var newDataFormat = [];
+  newDataFormat.push(row['game_id']);
+  newDataFormat.push(row['name']);
+  newDataFormat.push(row['release_date']);
+  newDataFormat.push(row['publisher']);
+  newDataFormat.push(row['developer']);
+  newDataFormat.push(row['rating']);
+  return newDataFormat;
+}
+var getCharRowInOrder = function(row){
+  var newDataFormat = [];
+  newDataFormat.push(row['character_id']);
+  newDataFormat.push(row['name']);
+  newDataFormat.push(row['alias']);
+  newDataFormat.push(row['gender']);
+  newDataFormat.push(row['description']);
+  newDataFormat.push(row['first_game']);
+  return newDataFormat;
+}
+var getConsoleRowInOrder = function(row){
+  var newDataFormat = [];
+  newDataFormat.push(row['console_id']);
+  newDataFormat.push(row['name']);
+  newDataFormat.push(row['abbreviation']);
+  newDataFormat.push(row['description']);
+  newDataFormat.push(row['number_sold']);
+  newDataFormat.push(row['owner_company']);
+  newDataFormat.push(row['release_date']);
+  return newDataFormat;
+}
 var delegateFillTable = function(data, editable){
   var val = requestTable;
   if(val === 'ctg') {
@@ -176,9 +224,17 @@ var delegateFillInputTable = function(data, editable){
   var inputsToFill = tableDib.find('input[type="text"]');
   var count = 0
   var newDataFormat = [];
-  $.each(data, function(k,v){
-    newDataFormat.push(v);
-  });
+  console.log(data);
+  if (requestTable === 'console'){
+    newDataFormat = getConsoleRowInOrder(data);
+  } else if (requestTable === 'characters') {
+    newDataFormat = getCharRowInOrder(data);
+  } else if (requestTable === 'game') {
+    newDataFormat = getGameRowInOrder(data);
+  } else {
+    newDataFormat = getCompanyRowInOrder(data);
+  }
+  console.log(newDataFormat);
   $.each(inputsToFill, function(k,v){
     $(v).val(newDataFormat[count]);
     count++;
@@ -261,26 +317,30 @@ var submitSelectUsual = function(){
   var values = [];
   $.each(inputs, function(k, v){
     var input = $(v)[0];
-    values.push([input.attributes[0].nodeValue, input.value]);
+    values.push([input.className, input.value]);
   });
   tableDib.find('#begin_message').hide();
   tableDib.find('#update_insert').hide();
-  console.log(values)
   $.ajax({
     type:'GET',
     url:'/select/'+requestTable,
     data: {values: JSON.stringify(values)},
     dataType:'json',
     contentType: "application/json; charset=utf-8",
-  }).done(function(resp){
-    console.log(resp);
-  });
-  delegateFillTable(exampleGameRows.rows, false);
+  }).success(function(resp){
+    delegateFillTable(resp.rows, false);  
+  }).fail(function(){});
 }
 var submitSelectConnections = function(){
   var connectorName = $('#connector_name').val();
-  //MAKE AJAX REQUEST HERE TO /select/connections/table
-  //using {values:{name: connectorName}}
+  $.ajax({
+    type:'GET',
+    url:'/select/connections/'+requestTable+'/'+connector_name,
+    dataType:'json',
+    contentType: "application/json; charset=utf-8",
+  }).success(function(resp){
+    delegateFillTable(resp.rows, false);
+  }).fail(function(){});
 };
 var submitSelectRequest = function(){
   if (requestTable === 'games_characters' || requestTable === 'char_games' 
@@ -295,23 +355,37 @@ var submitInsertRequest = function(){
   var values = [];
   $.each(inputs, function(k, v){
     var input = $(v)[0];
-    values.push([input.attributes[0].nodeValue, input.value]);
+    values.push([input.className, input.value]);
   });
   if (requestTable === 'gtcon' || requestTable === 'ctg') {
-    submitRequestConnection(values);
+    submitInsertConnection(values);
   } else {
     submitInsertUsual(values);
   }
 };
-var submitRequestConnection= function(values){
+var submitInsertConnection= function(values){
   if (requestTable === 'gtcon') {
-    //MAKE AJAX CALL TO /insert/connect/gtcon 
-    // {console_name: values[0][1], game_name : values[1][1]}
-    //will handle manipulating data on puthon side endpoint
+    $.ajax({
+      type:'POST',
+      url:'/insert/connect/gtcon/'+values[0][1]+'/'+values[1][1],
+      dataType:'json',
+      contentType: "application/json; charset=utf-8",
+    }).success(function(resp){
+      console.log("successful insert");
+    }).fail(function(){
+      console.log("insert failed");
+    });
   } else {
-    //MAKE AJAX CALL TO /insert/connect/ctg 
-    // {character_name: values[0][1], game_name : values[1][1]}
-    //will handle manipulating data on python side endpoint
+    $.ajax({
+      type:'POST',
+      url:'/insert/connect/ctg/'+values[0][1]+'/'+values[1][1],
+      dataType:'json',
+      contentType: "application/json; charset=utf-8",
+    }).success(function(resp){
+      console.log("successful insert");
+    }).fail(function(){
+      console.log("insert failed");
+    });
   }
 }
 var submitInsertUsual = function(values){
@@ -321,69 +395,177 @@ var submitInsertUsual = function(values){
     type:'POST',
     url:'/insert/'+requestTable,
     dataType:'json',
-    contentType: "application/json",
+    contentType: "application/json; charset=utf-8",
     data: JSON.stringify(values),
-  }).donechr
-  (function(resp){
-    submitDiv.hide();
+  }).success(function(resp){
+    console.log("successful insert");
+  }).fail(function(){
+    console.log("insert failed");
   });
-}
+};
 var submitGetUpdateRequest = function(){
   var name = $('#update_delete_id').val();
   values = [["name",name]];
-  //make SELECT AJAX REQUEST TO /select/requestTable using values
-  //GET RESPONSE OF ROW
-  delegateFillInputTable(exampleCompanyRow.rows[0]);
-  requestSample.hide();
-  tableDib.show();
-  tableDib.find('#update_insert').show();
-  $('#update_delete_id').val('');
-  $('#final_update_message').show();
-  submitDiv.show();
+  $.ajax({
+    type:'GET',
+    url:'/select/'+requestTable,
+    data: {values: JSON.stringify(values)},
+    dataType:'json',
+    contentType: "application/json; charset=utf-8",
+  }).success(function(resp){
+    delegateFillInputTable(resp.rows[0]);
+    requestSample.hide();
+    tableDib.show();
+    tableDib.find('#update_insert').show();
+    $('#update_delete_id').val('');
+    $('#final_update_message').show();
+    submitDiv.show();
+  }).fail(function(){});
 };
 var submitFinalUpdateRequest = function(){
   var inputs = tableDib.find('#update_insert').find('input');
   var values = [];
   $.each(inputs, function(k, v){
     var input = $(v)[0];
-    values.push([input.attributes[0].nodeValue, input.value]);
+    values.push([input.className, input.value]);
   });
   var id = values[0][1];
   values = values.splice(1);
-  //SUBMIT AJAX REUQEST TO /update/requestTable/id
+  $.ajax({
+    type:'POST',
+    url:'/update/'+requestTable+'/'+id,
+    data: {values: JSON.stringify(values)},
+    dataType:'json',
+    contentType: "application/json; charset=utf-8",
+  }).success(function(resp){
+    console.log("success");
+  }).fail(function(){});
 };
-var deleteId = -1;
-var sunmitGetDeleteRequest = function(){
+var submitGetDeleteRequest = function(){
   deleteId = -1;
   var name = $('#update_delete_id').val();
   values = [["name",name]];
-  //make SELECT AJAX REQUEST TO /select/requestTable using values
-  //GET RESPONSE OF ROW
-  delegateFillTable(exampleCompanyRow.rows);
-  requestSample.hide();
-  tableDib.show();
-  $('#update_delete_id').val('');
-  $('#final_delete_message').show();
-  submitDiv.show();
+  console.log(values);
+  $.ajax({
+    type:'GET',
+    url:'/select/'+requestTable,
+    data: {values: JSON.stringify(values)},
+    dataType:'json',
+    contentType: "application/json; charset=utf-8",
+  }).success(function(resp){
+    delegateFillTable(resp.rows, false);  
+    deleteId = resp.rows[0][getTableId()];
+    requestSample.hide();
+    tableDib.show();
+    $('#update_delete_id').val('');
+    $('#final_delete_message').show();
+    submitDiv.show();
+  }).fail(function(){});
 };
-var submitFinalDeleteRequest = function(){
+var deleteGame = function(){
+  $.ajax({
+      type:'POST',
+      url:'/bulkdelete/gtcon/'+getTableId()+'/'+deleteId,
+      dataType:'json',
+      contentType: "application/json; charset=utf-8",
+  }).success(function(resp){
+    $.ajax({
+        type:'POST',
+        url:'/bulkdelete/ctg/'+ getTableId()+'/'+deleteId,
+        dataType:'json',
+        contentType: "application/json; charset=utf-8",
+    }).success(function(){
+      $.ajax({
+          type:'POST',
+          url:'/delete/'+requestTable+'/'+deleteId,
+          dataType:'json',
+          contentType: "application/json; charset=utf-8",
+      }).success(function(){
+        console.log('successful delete');
+      }).fail(function(){
+        console.log('delete Failed');
+      });
+    }).fail(function(){
+      console.log('delete Failed');
+    }); 
+  }).fail(function(){
+    console.log('delete Failed');
+  });
+};
+var deleteCharacter = function(){
+  $.ajax({
+      type:'POST',
+      url:'/bulkdelete/ctg/'+ getTableId()+'/'+deleteId,
+      dataType:'json',
+      contentType: "application/json; charset=utf-8",
+  }).success(function(){
+    $.ajax({
+        type:'POST',
+        url:'/delete/'+requestTable+'/'+deleteId,
+        dataType:'json',
+        contentType: "application/json; charset=utf-8",
+    }).success(function(){
+      console.log('successful delete');
+    }).fail(function(){
+      console.log('delete Failed');
+    });
+  }).fail(function(){
+    console.log('delete Failed');
+  });
+};
+var deleteConsole = function(){
+  $.ajax({
+      type:'POST',
+      url:'/bulkdelete/gtcon/'+ getTableId()+'/'+deleteId,
+      dataType:'json',
+      contentType: "application/json; charset=utf-8",
+  }).success(function(){
+    $.ajax({
+        type:'POST',
+        url:'/delete/'+requestTable+'/'+deleteId,
+        dataType:'json',
+        contentType: "application/json; charset=utf-8",
+    }).success(function(){
+      console.log('successful delete');
+    }).fail(function(){
+      console.log('delete Failed');
+    });
+  }).fail(function(){
+    console.log('delete Failed');
+  }); 
+};
+var deleteCompany = function(){
+  $.ajax({
+      type:'POST',
+      url:'/delete/'+requestTable+'/'+deleteId,
+      dataType:'json',
+      contentType: "application/json; charset=utf-8",
+  }).success(function(){
+    console.log('successful delete');
+  }).fail(function(){
+    console.log('delete Failed');
+  }); 
+};
+var submitFinalDeleteRequest = function() {
   if (deleteId) {
     if (requestTable === 'games'){
-      //make AJAX REQUEST to /bulk-delete/gtcon/ with {values:{"game_id":deleteId}}
-      //make AJAX REQUEST to /bulk-delete/ctg with {values:{"game_id":deleteId}}
+      deleteGame();
     } else if (requestTable === 'character') {
-      //make AJAX REQUEST to /bulk-delete/ctg with {values:{"character_id":deleteId}}
+    deleteCharacter();
     } else if (requestTable === 'consoles') {
-      //make AJAX REQUEST to /bulk-delete/gtcon with {values:{"console":deleteId}}
+        deleteConsole();
+    } else {
+      deleteCompany();
     }
-    //MAKE AJAX REQUEST TO /delete/requestTable/id
+  } else {
+    console.log('there was nothing to delete');
   }
 };
 $('#get_single_data').click(function(){
   if (requestOperation === 'update'){
     submitGetUpdateRequest();
   } else {
-    sunmitGetDeleteRequest();
+    submitGetDeleteRequest();
   }
 });
 submitButton.click(function(){

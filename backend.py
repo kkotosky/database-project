@@ -128,6 +128,135 @@ def assemble_json(cursor):
         result.append(row)
     return json.dumps({"rows": result})
 
+def make_query(query):
+    cursor = db.cursor()
+    cursor.execute(query)
+    return assemble_array(cursor)
+
+def build_or_string(rows, key, row_id):
+    or_string = ""
+    length = len(rows)
+
+    count = 0
+    for row in rows:
+        if count == (length - 1) :
+            or_string+= (row_id + " == '" +row.get(key)+"'")
+        else :
+            or_string+= (row_id + " == '" +row.get(key) + "' OR ")
+        count += 1
+    return or_string
+
+@app.route('/select/collections/<table>/<name>', methods=['GET'])
+def select_connections(table, name):
+    if table == "games_characters" :
+        query = "SELECT * FROM games WHERE name = '"+ name + "';"
+        data = make_query(query);
+        query = "SELECT * FROM ctg WHERE game_id = '"+ data[0]['game_id']+"';"
+        data = make_query(query);
+        or_string = build_or_string(data, "character_id", "character_id")
+        query = "SELECT * FROM characters WHERE " + or_string + ";"
+    elif table == "char_games" :
+        query = "SELECT * FROM character WHERE name = '"+ name + "';"
+        data = make_query(query);
+        query = "SELECT * FROM ctg WHERE character_id = '"+ data[0]['character_id']+"';"
+        data = make_query(query);
+        or_string = build_or_string(data, "game_id", "game_id")
+        query = "SELECT * FROM characters WHERE " + or_string + ";"
+    elif table == "console_games":
+        query = "SELECT * FROM console WHERE name = '"+ name + "';"
+        data = make_query(query);
+        query = "SELECT * FROM gtcon WHERE console_id = '"+ data[0]['console_id']+"';"
+        data = make_query(query);
+        or_string = build_or_string(data, "game_id", "game_id")
+        query = "SELECT * FROM characters WHERE " + or_string + ";"
+    else:
+        query = "SELECT * FROM games WHERE name = '"+ name + "';"
+        data = make_query(query);
+        query = "SELECT * FROM ctg WHERE game_id = '"+ data[0]['game_id']+"';"
+        data = make_query(query);
+        or_string = build_or_string(data, "console_id", "console_id")
+        query = "SELECT * FROM consoles WHERE " + or_string + ";"
+
+    cursor = db.cursor()
+    cursor.execute(query)
+    return  assemble_json(cursor)
+
+def build_or_string(rows, key, row_id):
+    or_string = ""
+    length = len(rows)
+    count = 0
+    for row in rows:
+        if count != length :
+            or_string+= (row_id + " == " +row.get(key) + " OR ")
+        else :
+            or_string+= (row_id + " == " +row.get(key))
+        count+=1
+    return or_string
+
+@app.route('/bulkdelete/<table>/<tableid>/<deleteid>/', methods=['POST'])
+def bulk_delete(table, tableid, deleteid):
+    query = "DELETE FROM "+ table +" WHERE "+ tableid +" = '"+ deleteid + "';"
+    data = make_query(query);
+    db.commit()
+
+def make_insert_gtcon_call(conname, gamename):
+    query = "SELECT * FROM console where name == '"+conname+"';"
+    print query
+    data1 = [{"console_id":1}]
+    #data1 = make_query(query)
+    query2 = "SELECT * FROM games where name == '"+gamename+"';"
+    data2 = [{"game_id":3}]
+    #data2 = make_query(query2)
+    print query2
+
+    conid = data1[0]['console_id']
+    gameid =  data2[0]['game_id']
+    columns = "console_id, game_id"
+    values = "{con_id}, {game_id}".format(
+        con_id = conid,
+        game_id = gameid
+    ) 
+    final_query = "INSERT INTO gtcon ({column_values}) VALUES ({row_values})".format(
+        column_values=columns,
+        row_values=values
+    )
+
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+    
+    print(final_query)
+
+def make_insert_ctg_call(charname, gamename):
+    query = "SELECT * FROM characters where name == '"+charname+"';"
+    print query
+    data1 = [{"character_id":3}]
+    #data1 = make_query(query)
+    query2 = "SELECT * FROM games where name == '"+gamename+"';"
+    print query2
+    data2 = [{"game_id":3}]
+    #data2 = make_query(query2)
+
+    character_id = data1[0]['character_id']
+    gameid =  data2[0]['game_id']
+    columns = "character_id, game_id"
+    values = "{character_id}, {game_id}".format(
+        character_id = character_id,
+        game_id = gameid
+    ) 
+    final_query = "INSERT INTO gtcon ({column_values}) VALUES ({row_values})".format(
+        column_values=columns,
+        row_values=values
+    )
+
+    print final_query
+
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+
+@app.route('/insert/connect/<table>/<fid>/<secid>')
+def insert_connect(table, fid, secid):
+    if table == 'gtcon' :
+        make_insert_gtcon_call(fid, secid)
+    else :
+        make_insert_ctg_call(fid, secid)
 
 if __name__ == '__main__':
     app.run(debug=True)

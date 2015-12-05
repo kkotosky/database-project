@@ -30,8 +30,8 @@
 		<input type="radio" class="delete update insert" name="select_table" value="char_games"> Character's Games</input>
 		<input type="radio" class="delete update insert" name="select_table" value="games_characters"> Games' Characters </input>
 		<br>
-		<input type="radio" class="select update" name="select_table" value="ctg"> Character and Game </input>
-		<input type="radio" class="select update" name="select_table" value="gtcon"> Game and Console </input>
+		<input type="radio" class="select update delete" name="select_table" value="ctg"> Character and Game </input>
+		<input type="radio" class="select update delete" name="select_table" value="gtcon"> Game and Console </input>
 	</div>
 	<br>
 	<br>
@@ -71,12 +71,12 @@
 	<div id="ctg_table" hidden>
 		<table>
 			<tr>
-				<td>Character Id</td>
-				<td>Game Id</td>
+				<td>Character Name</td>
+				<td>Game Name</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input col="character_id" type="text"></input></td>
-				<td><input col="game_id" type="text"></input></td>
+				<td><input class="character_id" type="text"></input></td>
+				<td><input class="game_id" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
@@ -91,12 +91,12 @@
 				<td>Rating</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input disabled col="game_id" type="text"></input></td>
-				<td><input col="name" type="text"></input></td>
-				<td><input col="release_date" placeholder="MM-DD-YYYY" type="text"></input></td>
-				<td><input col="publisher" type="text"></input></td>
-				<td><input col="developer" type="text"></input></td>
-				<td><input col="rating" type="text"></input></td>
+				<td><input disabled class="game_id" type="text"></input></td>
+				<td><input class="name" type="text"></input></td>
+				<td><input class="release_date" placeholder="MM-DD-YYYY" type="text"></input></td>
+				<td><input class="publisher" type="text"></input></td>
+				<td><input class="developer" type="text"></input></td>
+				<td><input class="rating" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
@@ -112,12 +112,12 @@
 				<td>First Game</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input disabled col="character_id" type="text"></input></td>
-				<td><input col="name" type="text"></input></td>
-				<td><input col="alias" type="text"></input></td>
-				<td><input col="gender" type="text"></input></td>
-				<td><input col="description" type="text"></input></td>
-				<td><input col="first_game" type="text"></input></td>
+				<td><input disabled class="character_id" type="text"></input></td>
+				<td><input class="name" type="text"></input></td>
+				<td><input class="alias" type="text"></input></td>
+				<td><input class="gender" type="text"></input></td>
+				<td><input class="description" type="text"></input></td>
+				<td><input class="first_game" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
@@ -134,13 +134,13 @@
 				<td>Release Date</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input disabled col="console_id" type="text"></input></td>
-				<td><input col="name" type="text"></input></td>
-				<td><input col="abbreviation" type="text"></input></td>
-				<td><input col="descrption" type="text"></input></td>
-				<td><input col="number_sold" type="text"></input></td>
-				<td><input col="owner_company" type="text"></input></td>
-				<td><input col="release_date" placeholder="MM-DD-YYYY" type="text"></input></td>
+				<td><input disabled class="console_id" type="text"></input></td>
+				<td><input class="name" type="text"></input></td>
+				<td><input class="abbreviation" type="text"></input></td>
+				<td><input class="descrption" type="text"></input></td>
+				<td><input class="number_sold" type="text"></input></td>
+				<td><input class="owner_company" type="text"></input></td>
+				<td><input class="release_date" placeholder="MM-DD-YYYY" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
@@ -155,24 +155,24 @@
 				<td>Phone</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input disabled col="company_id" type="text"></input></td>
-				<td><input col="name" type="text"></input></td>
-				<td><input col="date_founded" type="text"></input></td>
-				<td><input col="address" type="text"></input></td>
-				<td><input col="website" type="text"></input></td>
-				<td><input col="phone" type="text"></input></td>
+				<td><input disabled class="company_id" type="text"></input></td>
+				<td><input class="name" type="text"></input></td>
+				<td><input class="date_founded" type="text"></input></td>
+				<td><input class="address" type="text"></input></td>
+				<td><input class="website" type="text"></input></td>
+				<td><input class="phone" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
 	<div id="gtcon_table" hidden>
 		<table>
 			<tr>
-				<td>Console Id</td>
-				<td>Game Id</td>
+				<td>Console Name</td>
+				<td>Game Name</td>
 			</tr>
 			<tr id="update_insert" hidden>
-				<td><input col="console_id" type="text"></input></td>
-				<td><input col="game_id" type="text"></input></td>
+				<td><input class="console_id" type="text"></input></td>
+				<td><input class="game_id" type="text"></input></td>
 			</tr>
 		</table>
 	</div>
