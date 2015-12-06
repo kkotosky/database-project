@@ -1,0 +1,42 @@
+body{
+	background-color: aqua;
+	padding-left: 25px;
+	padding-right: 25px;
+	padding-top: 25px;
+}
+#operation_selector{
+	font-size: 22px;
+	margin-bottom: 22px;
+}
+
+#table_selector{
+	font-size: 20px;
+}
+
+#table_selector input[type='radio']{
+	margin-right: 10px;
+	margin-bottom: 10px;		
+}
+#table_selector input[type="radio"]:disabled{
+	background-color: gray;
+}
+
+.fill_table td{
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	padding :3px ;
+	min-width: 182px;
+}
+.fill_table{
+	min-width: 1092px;
+}
+#submit_div{
+	padding-top: 10px;
+}
+#submit_new {
+	padding-top: 10px;
+}
+#submit_new button{
+	padding:3px;
+}

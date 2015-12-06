@@ -149,34 +149,27 @@ def build_or_string(rows, key, row_id):
 @app.route('/select/collections/<table>/<name>', methods=['GET'])
 def select_connections(table, name):
     if table == "games_characters" :
-        query = "SELECT * FROM game WHERE name = '"+ name + "';"
-        data = make_query(query);
-        query = "SELECT * FROM cs3200project.character_to_game WHERE game_id = '"+ data[0]['game_id']+"';"
-        data = make_query(query);
-        or_string = build_or_string(data, "character_id", "character_id")
-        query = "SELECT * FROM cs3200project.character WHERE " + or_string + ";"
+        query = """Select * from cs3200project.character vs join 
+        (Select character_id from 
+        (select * from cs3200project.game where name = '"""+name+"""') fst join 
+        cs3200project.character_to_game sec on fst.game_id = sec.game_id) ids on vs.character_id = ids.character_id"""
     elif table == "char_games" :
-        query = "SELECT * FROM cs3200project.character WHERE name = '"+ name + "';"
-        data = make_query(query);
-        query = "SELECT * FROM character_to_game WHERE character_id = '"+ data[0]['character_id']+"';"
-        data = make_query(query);
-        or_string = build_or_string(data, "game_id", "game_id")
-        query = "SELECT * FROM cs3200project.character WHERE " + or_string + ";"
+        query = """Select * from cs3200project.game vs join  
+        (Select game_id from 
+        (select * from cs3200project.character where name = '"""+name+"""') fst join 
+        cs3200project.character_to_game sec on fst.character_id = sec.character_id) ids on vs.game_id = ids.game_id"""
     elif table == "console_games":
-        query = "SELECT * FROM console WHERE name = '"+ name + "';"
-        data = make_query(query);
-        query = "SELECT * FROM game_to_console WHERE console_id = '"+ data[0]['console_id']+"';"
-        data = make_query(query);
-        or_string = build_or_string(data, "game_id", "game_id")
-        query = "SELECT * FROM cs3200project.character WHERE " + or_string + ";"
+        query = """Select * from cs3200project.game vs join  
+        (Select game_id from 
+        (select * from cs3200project.console where name = '"""+name+"""') fst join 
+        cs3200project.game_to_console sec on fst.console_id = sec.console_id) ids on vs.game_id = ids.game_id"""
     else:
-        query = "SELECT * FROM game WHERE name = '"+ name + "';"
-        data = make_query(query);
-        query = "SELECT * FROM character_to_game WHERE game_id = '"+ data[0]['game_id']+"';"
-        data = make_query(query);
-        or_string = build_or_string(data, "console_id", "console_id")
-        query = "SELECT * FROM console WHERE " + or_string + ";"
-
+        query = """Select * from cs3200project.console vs join 
+        (Select game_id from 
+        (select * from cs3200project.console where name = '"""+name+"""'') fst join 
+        cs3200project.game_to_console sec on fst.console_id = sec.console_id) ids on vs.game_id = ids.game_id"""
+    
+    print query
     cursor = db.cursor()
     cursor.execute(query)
     return  assemble_json(cursor)
@@ -187,24 +180,24 @@ def build_or_string(rows, key, row_id):
     count = 0
     for row in rows:
         if count != length :
-            or_string+= (row_id + " == " +row.get(key) + " OR ")
+            or_string+= (row_id + " = " +row.get(key) + " OR ")
         else :
-            or_string+= (row_id + " == " +row.get(key))
+            or_string+= (row_id + " = " +row.get(key))
         count+=1
     return or_string
 
 @app.route('/bulkdelete/<table>/<tableid>/<deleteid>/', methods=['POST'])
 def bulk_delete(table, tableid, deleteid):
-    query = "DELETE FROM "+ table +" WHERE "+ tableid +" = '"+ deleteid + "';"
+    query = "DELETE FROM cs3200project."+ table +" WHERE "+ tableid +" = '"+ deleteid + "';"
     data = make_query(query);
     db.commit()
 
 def make_insert_gtcon_call(conname, gamename):
-    query = "SELECT * FROM console where name == '"+conname+"';"
+    query = "SELECT * FROM console where name = '"+conname+"';"
     print query
     data1 = [{"console_id":1}]
     #data1 = make_query(query)
-    query2 = "SELECT * FROM game where name == '"+gamename+"';"
+    query2 = "SELECT * FROM game where name = '"+gamename+"';"
     data2 = [{"game_id":3}]
     #data2 = make_query(query2)
     print query2
@@ -226,11 +219,11 @@ def make_insert_gtcon_call(conname, gamename):
     print(final_query)
 
 def make_insert_ctg_call(charname, gamename):
-    query = "SELECT * FROM cs3200project.character where name == '"+charname+"';"
+    query = "SELECT * FROM cs3200project.character where name = '"+charname+"';"
     print query
     data1 = [{"character_id":3}]
     #data1 = make_query(query)
-    query2 = "SELECT * FROM game where name == '"+gamename+"';"
+    query2 = "SELECT * FROM game where name = '"+gamename+"';"
     print query2
     data2 = [{"game_id":3}]
     #data2 = make_query(query2)

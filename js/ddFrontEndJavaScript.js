@@ -65,6 +65,9 @@ var hideDivs = function(){
   submitDiv.hide();
   connectorDiv.hide();
   tableSelectorDiv.hide();
+  $('#games_message').hide();
+  $('#console_message').hide();
+  $('#character_message').hide();
   $('#final_update_message').hide();
   $('#request_update').hide();
 };
@@ -265,6 +268,8 @@ var enabledDisabledIdField = function(val){
 operationRadios.change(function(evt){
   hideDivs();
   enableTableRadios();
+  clearTables();
+  clearInputs();
   var activeTable = tableSelectorDiv.find('.active');
   activeTable.removeClass('.active');
   activeTable.prop('checked',false);
@@ -293,6 +298,8 @@ operationRadios.change(function(evt){
 tableRadios.change(function(evt){
   hideDivs();
   tableSelectorDiv.show();
+  clearTables();
+  clearInputs();
   var val = evt.currentTarget.value;
   $(evt.currentTarget).addClass('active');
   requestTable = val;
@@ -617,3 +624,4 @@ resetButton.click(function(){
   clearTables();
   clearInputs();
 });
+

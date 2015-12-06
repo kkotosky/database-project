@@ -3,6 +3,50 @@
 
 <head>
 	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<style>
+	body{
+		background-color: aqua;
+		padding-left: 25px;
+		padding-right: 25px;
+		padding-top: 25px;
+	}
+	#operation_selector{
+		font-size: 22px;
+		margin-bottom: 22px;
+	}
+
+	#table_selector{
+		font-size: 20px;
+	}
+
+	#table_selector input[type='radio']{
+		margin-right: 10px;
+		margin-bottom: 10px;		
+	}
+	#table_selector input[type="radio"]:disabled{
+		background-color: gray;
+	}
+
+	.fill_table td{
+		border-style: solid;
+		border-width: 1px;
+		border-color: black;
+		padding :3px ;
+		min-width: 182px;
+	}
+	.fill_table{
+		min-width: 1092px;
+	}
+	#submit_div{
+		padding-top: 10px;
+	}
+	#submit_new {
+		padding-top: 10px;
+	}
+	#submit_new button{
+		padding:3px;
+	}
+	</style>
 </head>
  <body style="center">
  	<div id="success_message" hidden>
@@ -22,17 +66,25 @@
 	<div id="table_selector" hidden>
 		<div> Select which table you would like to operate on </div>
 		<input type="radio" name="select_table" value="game"> Games </input>
+		<br>
 		<input type="radio" name="select_table" value="character"> Characters </input>
+		<br>
 		<input type="radio" name="select_table" value="console"> Console </input>
+		<br>
 		<input type="radio" name="select_table" value="company"> Company </input>
 		<br>
-		<input type="radio" class="delete update insert" name="select_table" value="games_consoles"> Game's Console </input>
-		<input type="radio" class="delete update insert" name="select_table" value="console_games"> Console Games </input>
-		<input type="radio" class="delete update insert" name="select_table" value="char_games"> Character's Games</input>
-		<input type="radio" class="delete update insert" name="select_table" value="games_characters"> Games' Characters </input>
+		<input type="radio" class="delete update insert" name="select_table" value="games_consoles"> Games a console is on </input>
+		<br>
+		<input type="radio" class="delete update insert" name="select_table" value="console_games"> Consoles have which games </input>
+		<br>
+		<input type="radio" class="delete update insert" name="select_table" value="char_games"> Character's are in which games</input>
+		<br>
+		<input type="radio" class="delete update insert" name="select_table" value="games_characters"> Games' have which characters </input>
 		<br>
 		<input type="radio" class="select update delete" name="select_table" value="character_to_game"> Character and Game </input>
+		<br>
 		<input type="radio" class="select update delete" name="select_table" value="game_to_console"> Game and Console </input>
+		<br>
 	</div>
 	<br>
 	<br>
@@ -69,7 +121,7 @@
 			<input id="connector_name" type="text"></input>
 		</div>
 	</div>
-	<div id="ctg_table" hidden>
+	<div class="fill_table" id="ctg_table" hidden>
 		<table>
 			<tr>
 				<td>Character Name</td>
@@ -81,7 +133,7 @@
 			</tr>
 		</table>
 	</div>
-	<div id="game_table" hidden>
+	<div class="fill_table" id="game_table" hidden>
 		<table>
 			<tr>
 				<td>Game ID</td>
@@ -102,7 +154,7 @@
 		</table>
 	</div>
 
-	<div id="char_table" hidden>
+	<div class="fill_table" id="char_table" hidden>
 		<table>
 			<tr>
 				<td>Character ID</td>
@@ -123,7 +175,7 @@
 		</table>
 	</div>
 
-	<div id="console_table" hidden>
+	<div class="fill_table" id="console_table" hidden>
 		<table>
 			<tr>
 				<td>Console ID</td>
@@ -145,7 +197,7 @@
 			</tr>
 		</table>
 	</div>
-	<div id="company_table" hidden>
+	<div class="fill_table" id="company_table" hidden>
 		<table>
 			<tr>
 				<td>Company ID</td>
@@ -165,7 +217,7 @@
 			</tr>
 		</table>
 	</div>
-	<div id="gtcon_table" hidden>
+	<div class="fill_table" id="gtcon_table" hidden>
 		<table>
 			<tr>
 				<td>Console Name</td>
