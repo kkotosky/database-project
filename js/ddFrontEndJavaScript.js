@@ -20,6 +20,10 @@ var tableDib;
 var textInputs = $('input[type="text"]');
 var updateDeleteRequest = $('#get_single_data');
 var connectorDiv = $('#provide_name');
+var gameIdSearch = $('.game_id');
+var charIdSearch = $('.character_id');
+var conIdSearch = $('.console_id');
+var comIdSearch = $('.company_id');
 var exampleGameRows = {
   rows: [
   {name:"Legend Of Zelda",release_date:"1998", publisher:"nintendo",
@@ -252,6 +256,12 @@ var enableTableRadios = function(){
     $(v).prop('disabled',false)
   });
 };
+var enabledDisabledIdField = function(val){
+  gameIdSearch.prop('disabled', val);
+  charIdSearch.prop('disabled', val);
+  conIdSearch.prop('disabled', val);
+  comIdSearch.prop('disabled', val);
+};
 operationRadios.change(function(evt){
   hideDivs();
   enableTableRadios();
@@ -264,15 +274,19 @@ operationRadios.change(function(evt){
   if(val === 'select') {
     tableSelectorDiv.show();
     disabledTableRadios('.select');
+    enabledDisabledIdField(false);
   } else if(val === 'insert') {
     tableSelectorDiv.show();
     disabledTableRadios('.insert');
+    enabledDisabledIdField(true);
   } else if(val === 'update') {
     tableSelectorDiv.show();
     disabledTableRadios('.update');
+    enabledDisabledIdField(true);
   } else {
     tableSelectorDiv.show();
     disabledTableRadios('.delete');
+    enabledDisabledIdField(true);
   }
   $('#begin_message').hide();
 });
