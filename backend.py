@@ -151,24 +151,24 @@ def select_connections(table, name):
     if table == "games_characters" :
         query = "SELECT * FROM game WHERE name = '"+ name + "';"
         data = make_query(query);
-        query = "SELECT * FROM character_to_game WHERE game_id = '"+ data[0]['game_id']+"';"
+        query = "SELECT * FROM cs3200project.character_to_game WHERE game_id = '"+ data[0]['game_id']+"';"
         data = make_query(query);
         or_string = build_or_string(data, "character_id", "character_id")
-        query = "SELECT * FROM character WHERE " + or_string + ";"
+        query = "SELECT * FROM cs3200project.character WHERE " + or_string + ";"
     elif table == "char_games" :
-        query = "SELECT * FROM character WHERE name = '"+ name + "';"
+        query = "SELECT * FROM cs3200project.character WHERE name = '"+ name + "';"
         data = make_query(query);
         query = "SELECT * FROM character_to_game WHERE character_id = '"+ data[0]['character_id']+"';"
         data = make_query(query);
         or_string = build_or_string(data, "game_id", "game_id")
-        query = "SELECT * FROM character WHERE " + or_string + ";"
+        query = "SELECT * FROM cs3200project.character WHERE " + or_string + ";"
     elif table == "console_games":
         query = "SELECT * FROM console WHERE name = '"+ name + "';"
         data = make_query(query);
         query = "SELECT * FROM game_to_console WHERE console_id = '"+ data[0]['console_id']+"';"
         data = make_query(query);
         or_string = build_or_string(data, "game_id", "game_id")
-        query = "SELECT * FROM character WHERE " + or_string + ";"
+        query = "SELECT * FROM cs3200project.character WHERE " + or_string + ";"
     else:
         query = "SELECT * FROM game WHERE name = '"+ name + "';"
         data = make_query(query);
@@ -226,7 +226,7 @@ def make_insert_gtcon_call(conname, gamename):
     print(final_query)
 
 def make_insert_ctg_call(charname, gamename):
-    query = "SELECT * FROM character where name == '"+charname+"';"
+    query = "SELECT * FROM cs3200project.character where name == '"+charname+"';"
     print query
     data1 = [{"character_id":3}]
     #data1 = make_query(query)
