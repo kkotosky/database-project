@@ -69,15 +69,15 @@ var hideDivs = function(){
   $('#request_update').hide();
 };
 var getTableId = function(){
-  if(requestTable === 'ctg') {
+  if(requestTable === 'character_to_game') {
     return "ctg_id";
   } else if(requestTable === 'game') {
     return "game_id";
   } else if(requestTable === 'character') {
     return "character_id";
-  } else if(requestTable === 'consoles') {
+  } else if(requestTable === 'console') {
    return "console_id";
-  } else if(requestTable === 'gtcon') {
+  } else if(requestTable === 'game_to_console') {
    return "gtcon_id"; 
   } else if(requestTable === 'company') {
    return "company_id";
@@ -210,15 +210,15 @@ var getConsoleRowInOrder = function(row){
 }
 var delegateFillTable = function(data, editable){
   var val = requestTable;
-  if(val === 'ctg') {
+  if(val === 'character_to_game') {
     fillCtGTable(data, editable); 
   } else if(val === 'game' || val === 'console_games' || val === 'char_games') {
     fillGameTable(data, editable);
   } else if(val === 'character' || val === 'games_characters') {
     fillCharTable(data, editable);
-  } else if(val === 'consoles' || val === 'games_consoles') {
+  } else if(val === 'console' || val === 'games_consoles') {
     fillConsoleTable(data, editable);
-  } else if(val === 'gtcon') {
+  } else if(val === 'game_to_console') {
     fillGtConTable(data, editable);
   } else if(val === 'company') {
     fillCompanyTable(data, editable)
@@ -296,15 +296,15 @@ tableRadios.change(function(evt){
   var val = evt.currentTarget.value;
   $(evt.currentTarget).addClass('active');
   requestTable = val;
-  if(val === 'ctg') {
+  if(val === 'character_to_game') {
     tableDib = ctgTable;
   } else if(val === 'game') {
     tableDib = gameTable;
   } else if(val === 'character') {
     tableDib = charTable;
-  } else if(val === 'consoles') {
+  } else if(val === 'console') {
     tableDib = consoleTable;
-  } else if(val === 'gtcon') {
+  } else if(val === 'game_to_console') {
     tableDib = gtconTable;
   } else if(val === 'company') {
     tableDib = companyTable;
@@ -371,17 +371,17 @@ var submitInsertRequest = function(){
     var input = $(v)[0];
     values.push([input.className, input.value]);
   });
-  if (requestTable === 'gtcon' || requestTable === 'ctg') {
+  if (requestTable === 'game_to_console' || requestTable === 'character_to_game') {
     submitInsertConnection(values);
   } else {
     submitInsertUsual(values);
   }
 };
 var submitInsertConnection= function(values){
-  if (requestTable === 'gtcon') {
+  if (requestTable === 'game_to_console') {
     $.ajax({
       type:'POST',
-      url:'/insert/connect/gtcon/'+values[0][1]+'/'+values[1][1],
+      url:'/insert/connect/game_to_console/'+values[0][1]+'/'+values[1][1],
       dataType:'json',
       contentType: "application/json; charset=utf-8",
     }).success(function(resp){
@@ -392,7 +392,7 @@ var submitInsertConnection= function(values){
   } else {
     $.ajax({
       type:'POST',
-      url:'/insert/connect/ctg/'+values[0][1]+'/'+values[1][1],
+      url:'/insert/connect/character_to_game/'+values[0][1]+'/'+values[1][1],
       dataType:'json',
       contentType: "application/json; charset=utf-8",
     }).success(function(resp){
@@ -479,13 +479,13 @@ var submitGetDeleteRequest = function(){
 var deleteGame = function(){
   $.ajax({
       type:'POST',
-      url:'/bulkdelete/gtcon/'+getTableId()+'/'+deleteId,
+      url:'/bulkdelete/game_to_console/'+getTableId()+'/'+deleteId,
       dataType:'json',
       contentType: "application/json; charset=utf-8",
   }).success(function(resp){
     $.ajax({
         type:'POST',
-        url:'/bulkdelete/ctg/'+ getTableId()+'/'+deleteId,
+        url:'/bulkdelete/character_to_game/'+ getTableId()+'/'+deleteId,
         dataType:'json',
         contentType: "application/json; charset=utf-8",
     }).success(function(){
@@ -509,7 +509,7 @@ var deleteGame = function(){
 var deleteCharacter = function(){
   $.ajax({
       type:'POST',
-      url:'/bulkdelete/ctg/'+ getTableId()+'/'+deleteId,
+      url:'/bulkdelete/character_to_game/'+ getTableId()+'/'+deleteId,
       dataType:'json',
       contentType: "application/json; charset=utf-8",
   }).success(function(){
@@ -530,7 +530,7 @@ var deleteCharacter = function(){
 var deleteConsole = function(){
   $.ajax({
       type:'POST',
-      url:'/bulkdelete/gtcon/'+ getTableId()+'/'+deleteId,
+      url:'/bulkdelete/game_to_console/'+ getTableId()+'/'+deleteId,
       dataType:'json',
       contentType: "application/json; charset=utf-8",
   }).success(function(){
@@ -566,7 +566,7 @@ var submitFinalDeleteRequest = function() {
       deleteGame();
     } else if (requestTable === 'character') {
     deleteCharacter();
-    } else if (requestTable === 'consoles') {
+    } else if (requestTable === 'console') {
         deleteConsole();
     } else {
       deleteCompany();
