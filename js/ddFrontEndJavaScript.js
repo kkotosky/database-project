@@ -356,7 +356,7 @@ var submitSelectConnections = function(){
   var connectorName = $('#connector_name').val();
   $.ajax({
     type:'GET',
-    url:'/select/connections/'+requestTable+'/'+connector_name,
+    url:'/select/connections/'+requestTable+'/'+connectorName,
     dataType:'json',
     contentType: "application/json; charset=utf-8",
   }).success(function(resp){
@@ -455,7 +455,7 @@ var submitFinalUpdateRequest = function(){
   $.ajax({
     type:'POST',
     url:'/update/'+requestTable+'/'+id,
-    data: {values: JSON.stringify(values)},
+    data: JSON.stringify(values),
     dataType:'json',
     contentType: "application/json; charset=utf-8",
   }).success(function(resp){
@@ -483,101 +483,18 @@ var submitGetDeleteRequest = function(){
     submitDiv.show();
   }).fail(function(){});
 };
-var deleteGame = function(){
-  $.ajax({
-      type:'POST',
-      url:'/bulkdelete/game_to_console/'+getTableId()+'/'+deleteId,
-      dataType:'json',
-      contentType: "application/json; charset=utf-8",
-  }).success(function(resp){
-    $.ajax({
-        type:'POST',
-        url:'/bulkdelete/character_to_game/'+ getTableId()+'/'+deleteId,
-        dataType:'json',
-        contentType: "application/json; charset=utf-8",
-    }).success(function(){
-      $.ajax({
-          type:'POST',
-          url:'/delete/'+requestTable+'/'+deleteId,
-          dataType:'json',
-          contentType: "application/json; charset=utf-8",
-      }).success(function(){
-        console.log('successful delete');
-      }).fail(function(){
-        console.log('delete Failed');
-      });
-    }).fail(function(){
-      console.log('delete Failed');
-    }); 
-  }).fail(function(){
-    console.log('delete Failed');
-  });
-};
-var deleteCharacter = function(){
-  $.ajax({
-      type:'POST',
-      url:'/bulkdelete/character_to_game/'+ getTableId()+'/'+deleteId,
-      dataType:'json',
-      contentType: "application/json; charset=utf-8",
-  }).success(function(){
-    $.ajax({
-        type:'POST',
-        url:'/delete/'+requestTable+'/'+deleteId,
-        dataType:'json',
-        contentType: "application/json; charset=utf-8",
-    }).success(function(){
-      console.log('successful delete');
-    }).fail(function(){
-      console.log('delete Failed');
-    });
-  }).fail(function(){
-    console.log('delete Failed');
-  });
-};
-var deleteConsole = function(){
-  $.ajax({
-      type:'POST',
-      url:'/bulkdelete/game_to_console/'+ getTableId()+'/'+deleteId,
-      dataType:'json',
-      contentType: "application/json; charset=utf-8",
-  }).success(function(){
-    $.ajax({
-        type:'POST',
-        url:'/delete/'+requestTable+'/'+deleteId,
-        dataType:'json',
-        contentType: "application/json; charset=utf-8",
-    }).success(function(){
-      console.log('successful delete');
-    }).fail(function(){
-      console.log('delete Failed');
-    });
-  }).fail(function(){
-    console.log('delete Failed');
-  }); 
-};
-var deleteCompany = function(){
-  $.ajax({
-      type:'POST',
-      url:'/delete/'+requestTable+'/'+deleteId,
-      dataType:'json',
-      contentType: "application/json; charset=utf-8",
-  }).success(function(){
-    console.log('successful delete');
-  }).fail(function(){
-    console.log('delete Failed');
-  }); 
-};
 var submitFinalDeleteRequest = function() {
   if (deleteId) {
-    if (requestTable === 'games'){
-      deleteGame();
-    } else if (requestTable === 'character') {
-    deleteCharacter();
-    } else if (requestTable === 'console') {
-        deleteConsole();
-    } else {
-      deleteCompany();
-    }
+    $.ajax({
+        type:'POST',
+        url:'/delete/'+requestTable+'/'+deleteId,
+        dataType:'json',
+        contentType: "application/json; charset=utf-8",
+    }).success(function(){
+      console.log('successful delete');
+    }).fail(function(){
+      console.log('delete Failed');
+    });
   } else {
     console.log('there was nothing to delete');
   }
