@@ -231,21 +231,20 @@ var delegateFillInputTable = function(data, editable){
   var inputsToFill = tableDib.find('input[type="text"]');
   var count = 0
   var newDataFormat = [];
-  console.log(data);
   if (requestTable === 'console'){
     newDataFormat = getConsoleRowInOrder(data);
-  } else if (requestTable === 'characters') {
+  } else if (requestTable === 'character') {
     newDataFormat = getCharRowInOrder(data);
   } else if (requestTable === 'game') {
     newDataFormat = getGameRowInOrder(data);
   } else {
     newDataFormat = getCompanyRowInOrder(data);
   }
-  console.log(newDataFormat);
   $.each(inputsToFill, function(k,v){
     $(v).val(newDataFormat[count]);
     count++;
   });
+  tableDib.show();
 };
 var disabledTableRadios = function(classname){
   var radios = tableSelectorDiv.find(classname);
@@ -305,16 +304,22 @@ tableRadios.change(function(evt){
   requestTable = val;
   if(val === 'character_to_game') {
     tableDib = ctgTable;
+    enabledDisabledIdField(false);
   } else if(val === 'game') {
     tableDib = gameTable;
+    enabledDisabledIdField(true);
   } else if(val === 'character') {
     tableDib = charTable;
+    enabledDisabledIdField(true);
   } else if(val === 'console') {
     tableDib = consoleTable;
+    enabledDisabledIdField(true);
   } else if(val === 'game_to_console') {
+    enabledDisabledIdField(false);
     tableDib = gtconTable;
   } else if(val === 'company') {
     tableDib = companyTable;
+    enabledDisabledIdField(true);
   } else {
     tableDib = connectorDiv;
     if(val === 'games_consoles' || val === 'games_characters'){
@@ -427,23 +432,24 @@ var submitInsertUsual = function(values){
 var submitGetUpdateRequest = function(){
   var name = $('#update_delete_id').val();
   values = [["name",name]];
-  $.ajax({
+  /*$.ajax({
     type:'GET',
     url:'/select/'+requestTable,
     data: {values: JSON.stringify(values)},
     dataType:'json',
     contentType: "application/json; charset=utf-8",
-  }).success(function(resp){
-    delegateFillInputTable(resp.rows[0]);
+  }).success(function(resp){*/
+    delegateFillInputTable(exampleCharRows.rows[0]);
     requestSample.hide();
     tableDib.show();
     tableDib.find('#update_insert').show();
-    $('#update_delete_id').val('');
+    /*$('#update_delete_id').val('');
     $('#final_update_message').show();
     submitDiv.show();
-  }).fail(function(){});
+  }).fail(function(){});*/
 };
 var submitFinalUpdateRequest = function(){
+  tableDib.find('#update_insert').hide();
   var inputs = tableDib.find('#update_insert').find('input');
   var values = [];
   $.each(inputs, function(k, v){
