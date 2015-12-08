@@ -43,7 +43,7 @@ def select_entry(table):
             )
 
     query = "SELECT * FROM {table_name} {filter_string}".format(
-        table_name=table,
+        table_name=dbname+"." + table,
         filter_string=filter_string
     )
     print "Query: " + query
@@ -54,14 +54,33 @@ def select_entry(table):
     return assemble_json(cursor)
 
 @app.route('/update/<table>/<entryid>', methods=['POST'])
-def update_entry(table):
-    print "Hello update"
+def update_entry(table, entryid):
+    data = ast.literal_eval(request.data)
+
+    # filter out any values that are empty
+    data = [a for a in data if '' not in a]
+
+    update_string = ""
+    print "update string"
+    print data
+    for x in range(0, len(data)):
+        if x == 0:
+            update_string += data[0][0] + "='" + data[0][1] + "'"
+        else:
+            update_string += ", " + data[x][0] + "='" + data[x][1] + "'"
+
 
     query = "UPDATE {table_name} SET {new_values} WHERE {id}".format(
             table_name=table,
-            new_values="",
+            new_values=update_string,
             id=table + "_id=" + entryid
         )
+
+    print query;
+
+    cursor = db.cursor()
+    cursor.execute(query)
+    db.commit()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
@@ -123,9 +142,22 @@ def assemble_json(cursor):
 
     result = []
     rows = cursor.fetchall()
+
+    print columns
+    print rows
+    print list(rows)
     for row in rows:
         row = dict(zip(columns, row))
         result.append(row)
+
+    print result
+    # convert datetimes to readable string (json cannot interpret them)
+    for x in result:
+        if 'release_date' in x:
+            x['release_date'] = str(x['release_date'].now())
+        if 'date_founded' in x:
+            x['date_founded'] = str(x['date_founded'].now())
+
     return json.dumps({"rows": result})
 
 def build_or_string(rows, key, row_id):
@@ -141,9 +173,9 @@ def build_or_string(rows, key, row_id):
         count += 1
     return or_string
 
-@app.route('/select/collections/<table>/<name>', methods=['GET'])
+@app.route('/select/connections/<table>/<name>', methods=['GET'])
 def select_connections(table, name):
-        if table == "games_characters" :
+    if table == "games_characters" :
         query = "Select * from cs3200project.character vs join (Select character_id from (select * from cs3200project.game where name = '"+name+"') fst join cs3200project.character_to_game sec on fst.game_id = sec.game_id) ids on vs.character_id = ids.character_id"
     elif table == "char_games" :
         query = "Select * from cs3200project.game vs join  (Select game_id from (select * from cs3200project.character where name = '"+name+"') fst join cs3200project.character_to_game sec on fst.character_id = sec.character_id) ids on vs.game_id = ids.game_id"
