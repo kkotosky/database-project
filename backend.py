@@ -6,21 +6,25 @@ import json
 
 app = Flask(__name__)
 
+# Connect to database
 dbname = 'cs3200project'
 db = MySQLdb.connect(host="localhost", 
                      user="root",
                      passwd="",
                      db=dbname)
 
+# Return HTML for front end
 @app.route('/')
 def homepage():
     return render_template('ddFrontEnd.html')
 
+# Return javascript for front end
 @app.route('/js/<path:path>')
 def send_js(path):
     return send_from_directory('js', path)
 
 
+# Select an entry from the specified table and arguments
 @app.route('/select/<table>', methods=['GET'])
 def select_entry(table):
     # retrieve array and translate it into python array
@@ -29,6 +33,7 @@ def select_entry(table):
     # filter out any values that are empty
     data = [a for a in data if '' not in a]
     
+    # assemble the query from filters provided
     filter_string=""
     for x in range(0, len(data)):
         if x==0:
@@ -48,11 +53,14 @@ def select_entry(table):
     )
     print "Query: " + query
 
+    # execute query
     cursor = db.cursor()
     cursor.execute(query)
 
+    # return JSON representation of query
     return assemble_json(cursor)
 
+# update an entry in the database with the given table / id
 @app.route('/update/<table>/<entryid>', methods=['POST'])
 def update_entry(table, entryid):
     data = ast.literal_eval(request.data)
@@ -60,6 +68,7 @@ def update_entry(table, entryid):
     # filter out any values that are empty
     data = [a for a in data if '' not in a]
 
+    # create the update query based on what parameters are passed
     update_string = ""
     print "update string"
     print data
@@ -78,12 +87,14 @@ def update_entry(table, entryid):
 
     print query;
 
+    # execute query and commit changes to database
     cursor = db.cursor()
     cursor.execute(query)
     db.commit()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
+# insert an entry into the specified table
 @app.route('/insert/<table>', methods=['POST'])
 def insert_entry(table):
     data = ast.literal_eval(request.data)
@@ -91,6 +102,7 @@ def insert_entry(table):
     # filter out any values that are empty
     data = [a for a in data if '' not in a]
 
+    # assemble the insert query string
     columns=""
     values=""
     for x in range(0, len(data)):
@@ -101,36 +113,39 @@ def insert_entry(table):
             columns += ", " + data[x][0]
             values += ", '" + data[x][1] + "'"
 
-    print columns
-    print values
-
     query = "INSERT INTO {table_name} ({column_values}) VALUES ({row_values})".format(
         table_name=dbname + "." + table,
         column_values=columns,
         row_values=values,
     )
-
     print query
 
+    # execute query and commit changes to database
     cursor = db.cursor()
     cursor.execute(query)
     db.commit()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
+# delete an entry with given id from the given table 
 @app.route('/delete/<table>/<entryid>', methods=['POST'])
 def delete_entry(table, entryid):
-    query = "delete from " + dbname + "." + table  + " where " + table + "_id=" + entryid
+    # assemble delete query
+    query = "DELETE from " + dbname + "." + table  + " WHERE " + table + "_id=" + entryid
+    
     print query
+    
+    # execute query and commit to the database
     cursor = db.cursor()
     cursor.execute(query)
     db.commit()
 
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
+# return all rows in the given table
 @app.route('/viewall/<table>', methods=['GET'])
 def viewall(table):
-    query = "select * from " + dbname + "." +  table
+    query = "SELECT * from " + dbname + "." +  table
     cursor = db.cursor()
     cursor.execute(query)
     
@@ -154,9 +169,9 @@ def assemble_json(cursor):
     # convert datetimes to readable string (json cannot interpret them)
     for x in result:
         if 'release_date' in x:
-            x['release_date'] = str(x['release_date'].now())
+            x['release_date'] = str(x['release_date'].date())
         if 'date_founded' in x:
-            x['date_founded'] = str(x['date_founded'].now())
+            x['date_founded'] = str(x['date_founded'].date())
 
     return json.dumps({"rows": result})
 
@@ -201,12 +216,6 @@ def build_or_string(rows, key, row_id):
         count+=1
     return or_string
 
-@app.route('/bulkdelete/<table>/<tableid>/<deleteid>/', methods=['POST'])
-def bulk_delete(table, tableid, deleteid):
-    query = "DELETE FROM cs3200project."+ table +" WHERE "+ tableid +" = '"+ deleteid + "';"
-    data = make_query(query);
-    db.commit()
-
 def make_query(query):
     cursor = db.cursor()
     cursor.execute(query)
@@ -232,9 +241,13 @@ def make_insert_gtcon_call(conname, gamename):
         row_values=values
     )
 
+    print final_query
+
+    cursor = db.cursor()
+    cursor.execute(final_query)
+    db.commit()
+
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
-    
-    print(final_query)
 
 def make_insert_ctg_call(charname, gamename):
     query = "SELECT character_id FROM cs3200project.character where name = '"+charname+"'"
@@ -258,9 +271,13 @@ def make_insert_ctg_call(charname, gamename):
 
     print final_query
 
+    cursor = db.cursor()
+    cursor.execute(final_query)
+    db.commit()
+
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
-@app.route('/insert/connect/<table>/<fid>/<secid>')
+@app.route('/insert/connect/<table>/<fid>/<secid>', methods=['POST'])
 def insert_connect(table, fid, secid):
     if table == 'game_to_console' :
         make_insert_gtcon_call(fid, secid)
