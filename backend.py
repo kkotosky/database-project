@@ -105,7 +105,7 @@ def insert_entry(table):
     print values
 
     query = "INSERT INTO {table_name} ({column_values}) VALUES ({row_values})".format(
-        table_name=table,
+        table_name=dbname + "." + table,
         column_values=columns,
         row_values=values,
     )
