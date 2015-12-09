@@ -160,11 +160,6 @@ def assemble_json(cursor):
 
     return json.dumps({"rows": result})
 
-def make_query(query):
-    cursor = db.cursor()
-    cursor.execute(query)
-    return assemble_array(cursor)
-
 def build_or_string(rows, key, row_id):
     or_string = ""
     length = len(rows)
@@ -187,7 +182,7 @@ def select_connections(table, name):
     elif table == "console_games":
         query = "Select * from cs3200project.game vs join  (Select game_id from (select * from cs3200project.console where name = '"+name+"') fst join cs3200project.game_to_console sec on fst.console_id = sec.console_id) ids on vs.game_id = ids.game_id"
     else:
-        query = "Select * from cs3200project.console vs join (Select game_id from (select * from cs3200project.console where name = '"+name+"'') fst join cs3200project.game_to_console sec on fst.console_id = sec.console_id) ids on vs.game_id = ids.game_id"
+        query = "Select * from cs3200project.console vs join (Select game_id from (select * from cs3200project.game where name = '"+name+"') fst join cs3200project.game_to_console sec on fst.game_id = sec.game_id) ids on vs.console_id = ids.console_id"
     
     print query
     cursor = db.cursor()
@@ -212,15 +207,18 @@ def bulk_delete(table, tableid, deleteid):
     data = make_query(query);
     db.commit()
 
+def make_query(query):
+    cursor = db.cursor()
+    cursor.execute(query)
+    return assemble_array(cursor)
+
 def make_insert_gtcon_call(conname, gamename):
-    query = "SELECT * FROM console where name = '"+conname+"';"
+    query = "SELECT console_id FROM console where name = '"+conname+"'"
     print query
-    data1 = [{"console_id":1}]
-    #data1 = make_query(query)
-    query2 = "SELECT * FROM game where name = '"+gamename+"';"
-    data2 = [{"game_id":3}]
-    #data2 = make_query(query2)
+    data1 = make_query(query)
+    query2 = "SELECT game_id FROM game where name = '"+gamename+"'"
     print query2
+    data2 = make_query(query2)
 
     conid = data1[0]['console_id']
     gameid =  data2[0]['game_id']
@@ -239,14 +237,12 @@ def make_insert_gtcon_call(conname, gamename):
     print(final_query)
 
 def make_insert_ctg_call(charname, gamename):
-    query = "SELECT * FROM cs3200project.character where name = '"+charname+"';"
+    query = "SELECT character_id FROM cs3200project.character where name = '"+charname+"'"
     print query
-    data1 = [{"character_id":3}]
-    #data1 = make_query(query)
-    query2 = "SELECT * FROM game where name = '"+gamename+"';"
+    data1 = make_query(query)
+    query2 = "SELECT game_id FROM game where name = '"+gamename+"'"
     print query2
-    data2 = [{"game_id":3}]
-    #data2 = make_query(query2)
+    data2 = make_query(query2)
 
     character_id = data1[0]['character_id']
     gameid =  data2[0]['game_id']

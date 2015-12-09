@@ -231,21 +231,20 @@ var delegateFillInputTable = function(data, editable){
   var inputsToFill = tableDib.find('input[type="text"]');
   var count = 0
   var newDataFormat = [];
-  console.log(data);
   if (requestTable === 'console'){
     newDataFormat = getConsoleRowInOrder(data);
-  } else if (requestTable === 'characters') {
+  } else if (requestTable === 'character') {
     newDataFormat = getCharRowInOrder(data);
   } else if (requestTable === 'game') {
     newDataFormat = getGameRowInOrder(data);
   } else {
     newDataFormat = getCompanyRowInOrder(data);
   }
-  console.log(newDataFormat);
   $.each(inputsToFill, function(k,v){
     $(v).val(newDataFormat[count]);
     count++;
   });
+  tableDib.show();
 };
 var disabledTableRadios = function(classname){
   var radios = tableSelectorDiv.find(classname);
@@ -305,16 +304,30 @@ tableRadios.change(function(evt){
   requestTable = val;
   if(val === 'character_to_game') {
     tableDib = ctgTable;
+    enabledDisabledIdField(false);
   } else if(val === 'game') {
     tableDib = gameTable;
+    if (requestOperation !== 'select') {
+      enabledDisabledIdField(true);
+    }
   } else if(val === 'character') {
     tableDib = charTable;
+    if (requestOperation !== 'select') {
+      enabledDisabledIdField(true);
+    }
   } else if(val === 'console') {
     tableDib = consoleTable;
+    if (requestOperation !== 'select') {
+      enabledDisabledIdField(true);
+    }
   } else if(val === 'game_to_console') {
+    enabledDisabledIdField(false);
     tableDib = gtconTable;
   } else if(val === 'company') {
     tableDib = companyTable;
+    if (requestOperation !== 'select') {
+      enabledDisabledIdField(true);
+    }
   } else {
     tableDib = connectorDiv;
     if(val === 'games_consoles' || val === 'games_characters'){
@@ -434,7 +447,7 @@ var submitGetUpdateRequest = function(){
     dataType:'json',
     contentType: "application/json; charset=utf-8",
   }).success(function(resp){
-    delegateFillInputTable(resp.rows[0]);
+    delegateFillInputTable(exampleCharRows.rows[0]);
     requestSample.hide();
     tableDib.show();
     tableDib.find('#update_insert').show();
@@ -444,6 +457,7 @@ var submitGetUpdateRequest = function(){
   }).fail(function(){});
 };
 var submitFinalUpdateRequest = function(){
+  tableDib.find('#update_insert').hide();
   var inputs = tableDib.find('#update_insert').find('input');
   var values = [];
   $.each(inputs, function(k, v){
